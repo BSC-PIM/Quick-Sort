@@ -2,7 +2,7 @@
 #include <dpu.h>
 
 #ifndef DPU_BINARY
-#define DPU_BINARY "dpu"
+#define DPU_BINARY "build/dpu"
 #endif
 
 /* Size of the buffer that we want to pivot: 1KByte. */
@@ -46,6 +46,15 @@ void print_buffer(uint32_t *buffer, size_t size) {
 }
 
 
+void test(uint32_t *arr, size_t size){
+    uint32_t temp = arr[0];
+    for (size_t i = 0; i < size; i++) {
+        assert(temp <= (arr[i]));
+        temp = arr[i];
+    }
+}
+
+
 int main() {
     struct dpu_set_t set;
 
@@ -76,11 +85,11 @@ int main() {
                              sizeof(uint32_t),
                              DPU_XFER_DEFAULT));
 
-
-    print_buffer(buffer, BUFFER_SIZE / NB_DPUS);
-    print_buffer(buffer + BUFFER_SIZE / NB_DPUS, BUFFER_SIZE / NB_DPUS);
-    print_buffer(buffer + 2 * BUFFER_SIZE / NB_DPUS, BUFFER_SIZE / NB_DPUS);
-    print_buffer(buffer + 3 * BUFFER_SIZE / NB_DPUS, BUFFER_SIZE / NB_DPUS);
+    
+    for (int i = 0; i < NB_DPUS; i++) {
+        print_buffer(buffer + i * BUFFER_SIZE / NB_DPUS, BUFFER_SIZE / NB_DPUS);
+    }
+    
 
     DPU_ASSERT(dpu_launch(set, DPU_SYNCHRONOUS));
 
@@ -102,10 +111,10 @@ int main() {
                              DPU_XFER_DEFAULT));
 
     printf("Sorted array:\n");
-    print_buffer(buffer, BUFFER_SIZE / NB_DPUS);
-    print_buffer(buffer + BUFFER_SIZE / NB_DPUS, BUFFER_SIZE / NB_DPUS);
-    print_buffer(buffer + 2 * BUFFER_SIZE / NB_DPUS, BUFFER_SIZE / NB_DPUS);
-    print_buffer(buffer + 3 * BUFFER_SIZE / NB_DPUS, BUFFER_SIZE / NB_DPUS);
+    for (int i = 0; i < NB_DPUS; i++) {
+        print_buffer(buffer + i * BUFFER_SIZE / NB_DPUS, BUFFER_SIZE / NB_DPUS);
+    }
+
     DPU_ASSERT(dpu_free(set));
 
 
@@ -129,11 +138,15 @@ int main() {
         }
         sorted_buffer[i] = min;
         sub_buffer_pointer[min_index]++;
+        if (sub_buffer_pointer[min_index] == buffer + (min_index + 1) * BUFFER_SIZE / NB_DPUS) {
+            sub_buffer_pointer[min_index] = NULL;
+        }
     }
 
     printf("Merged sorted array:\n");
     print_buffer(sorted_buffer, BUFFER_SIZE);
 
-
+    test(sorted_buffer, BUFFER_SIZE);
+    printf("Test passed\n");
     return 0;
 }
