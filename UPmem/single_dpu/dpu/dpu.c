@@ -77,7 +77,7 @@ int partition(uint32_t *arr, int low, int high, pivot_type type) {
         int i = low;
         int j = high - 1;
         while (i < j) {
-            while (i < high - 1 && arr[i] <= p.value) {
+            while (i < high && arr[i] <= p.value) {
                 i++;
             }
             while (j > 0 && arr[j] > p.value) {
@@ -111,7 +111,7 @@ void quicksort(uint32_t *arr, int low, int high, pivot_type type) {
     if (type == PREDETERMINED) {
         int pivot_index = partition(arr, low, high, type);
         quicksort(arr, low, pivot_index, FIRST);
-        quicksort(arr, pivot_index + 1, high, FIRST);
+        quicksort(arr, pivot_index, high, FIRST);
 
     } else {
         if (low < high) {

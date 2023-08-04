@@ -2,7 +2,7 @@
 #include <dpu.h>
 
 #ifndef DPU_BINARY
-#define DPU_BINARY "dpu"
+#define DPU_BINARY "build/dpu"
 #endif
 
 /* Size of the buffer that we want to pivot: 1KByte. */
@@ -22,7 +22,7 @@ void fill_random_buffer(uint32_t *buffer, size_t size) {
     }
 }
 
-void populate_mram(struct dpu_set_t set, int *buffer) {
+void populate_mram(struct dpu_set_t set, uint32_t *buffer) {
     struct dpu_set_t dpu;
     uint32_t each_dpu;
 
@@ -47,13 +47,15 @@ void print_buffer(uint32_t *buffer, size_t size) {
 
 
 int main() {
+    srand(42);
     struct dpu_set_t set;
 
     /* Generate random data */
     uint32_t buffer[BUFFER_SIZE];
     fill_random_buffer(buffer, BUFFER_SIZE);
 
-    int pivot = buffer[0];
+    int pivot = rand() % MAX_RANDOM + 1;
+    printf("Pivot: %d\n", pivot);
 
     /* Initialize and run */
     DPU_ASSERT(dpu_alloc(NB_DPUS, NULL, &set));
