@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 
-#define SIZE 10
+#define SIZE 16
 
 
 void populate(uint32_t *arr, int low, int high) {
@@ -32,8 +32,8 @@ void sample(uint32_t *arr, int low, int high) {
 
 int main() {
 
-    //167 741 882 242 13 759 22 941 536 744 875 144 718 505 697 763
-    uint32_t arr[SIZE] = {167, 741, 882, 242, 13, 759, 22, 941, 536, 744};
+    // 893 449 699 260 868 353 810 34 728 580 170 505 142 177 434 308
+    uint32_t arr[SIZE] = {893, 449, 699, 260, 868, 353, 810, 34, 728, 580, 170, 505, 142, 177, 434, 308};
 
     sample(arr, 0, SIZE - 1);
 
