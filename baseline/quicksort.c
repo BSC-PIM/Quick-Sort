@@ -55,8 +55,6 @@ pivot choose_pivot(uint32_t *arr, int low, int high, pivot_type type) {
 static
 int partition(uint32_t *arr, int low, int high, pivot_type type) {
     pivot p = choose_pivot(arr, low, high, type);
-
-    printf("\n");
     if (type == PREDETERMINED) {
         // the index is not valid for the predetermined pivot. use two directions partitioning algorithm
         int i = low;
