@@ -7,18 +7,24 @@ set(CMAKE_C_FLAGS "-fopenmp")
 
 
 add_executable(MergeIdea main.c
-        utils/work_queue.h
-        utils/job.h
-        utils/work_queue.c
+        commons/dataStructure/work_queue.h
+        commons/dataStructure/job.h
+        commons/dataStructure/work_queue.c
+        quicksort_mt_tp.c
+        quicksort_mt_tp.h
+        utils/utils.h
+        commons/quicksort_common.c
+        commons/quicksort_common.h
 )
 
 
 add_executable(Test tests/work_queue_test.c
-        utils/work_queue.h
-        utils/job.h
-        utils/work_queue.c
+        commons/dataStructure/work_queue.h
+        commons/dataStructure/job.h
+        commons/dataStructure/work_queue.c
         ../../libs/Unity/src/unity.c
+        utils/utils.h
 )
 
-include_directories("utils")
+include_directories("utils" "commons/dataStructure" "commons")
 target_include_directories(Test PRIVATE "../../libs/Unity/src")
