@@ -6,8 +6,8 @@
 #include "stdint.h"
 #include "pthread.h"
 
+extern int WQ_THREAD_NUM;
 
-// struct for work queue which is thread safe
 
 /// @brief work_queue_item_t is a struct which contains 
 typedef struct work_queue_item {
@@ -16,7 +16,7 @@ typedef struct work_queue_item {
     struct work_queue_item *prev;
 } work_queue_item_t;
 
-
+/// @brief queue data structure
 typedef struct work_queue {
     uint64_t size;
     work_queue_item_t *head;
@@ -43,9 +43,6 @@ job_t *work_queue_pop(work_queue_t *queue);
 /// @brief work_queue_destroy is a function which destroys work_queue_t
 /// @param queue is a pointer to work_queue_t
 void work_queue_destroy(work_queue_t *queue);
-
-
-
 
 
 #endif //MERGEIDEA_WORK_QUEUE_H

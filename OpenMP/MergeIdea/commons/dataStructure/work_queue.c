@@ -3,7 +3,12 @@
 //
 
 #include <malloc.h>
+#include <assert.h>
 #include "work_queue.h"
+
+int WQ_THREAD_NUM = 1;
+
+int WAITING_THREADS = 0;
 
 
 void work_queue_init(work_queue_t *queue) {
@@ -47,15 +52,29 @@ void work_queue_push(work_queue_t *queue, job_t *job) {
 
 job_t *work_queue_pop(work_queue_t *queue) {
 
-    // check if queue is not null
-    if (queue == NULL) return NULL;
+    assert(queue != NULL);
+
+    if (WAITING_THREADS == WQ_THREAD_NUM - 1) {
+        pthread_cond_broadcast(&queue->cond);
+    }
 
     // lock queue
     pthread_mutex_lock(&queue->lock);
 
+    WAITING_THREADS++;
+
+
     // wait until queue is not empty (Not Busy Waiting)
     while (queue->size == 0) {
         pthread_cond_wait(&queue->cond, &queue->lock);
+    }
+
+    WAITING_THREADS--;
+
+    // wait limit acceded
+    if (queue->size == 0) {
+        pthread_mutex_unlock(&queue->lock);
+        return NULL;
     }
 
     // get last item
