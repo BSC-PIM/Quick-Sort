@@ -20,4 +20,5 @@ add_executable(Test tests/work_queue_test.c
         ../../libs/Unity/src/unity.c
 )
 
+include_directories("utils")
 target_include_directories(Test PRIVATE "../../libs/Unity/src")
