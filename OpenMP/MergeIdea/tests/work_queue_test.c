@@ -113,7 +113,8 @@ void test_multiThreadPop_shouldPopAllTheElements(void) {
             popped++;
         } else {
             // push
-            work_queue_push(wq, &(job_t) {.start = i});
+            job_t *job = malloc(sizeof(job_t));
+            work_queue_push(wq, job);
             // atomic increment
 #pragma omp atomic
             pushed++;
@@ -123,7 +124,7 @@ void test_multiThreadPop_shouldPopAllTheElements(void) {
     // check the size of the queue
     TEST_ASSERT_EQUAL_INT64_MESSAGE(200, pushed + popped, "RACE CONDITION ON POP! ");
     TEST_ASSERT_EQUAL_INT64_MESSAGE(wq->size, pushed - popped, "RACE CONDITION ON POP");
-    TEST_ASSERT_NULL_MESSAGE(work_queue_pop(wq), "INCORRECT JOB POP");
+    TEST_ASSERT_NULL_MESSAGE(wq->head, "INCORRECT JOB POP");
 }
 
 int main() {
