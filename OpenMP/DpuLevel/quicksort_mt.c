@@ -63,12 +63,19 @@ void task_serve(uint64_t *array, size_t start, size_t end, partition_method_t me
 
 void prepare_queue(size_t size, work_queue_t **wq);
 
-void threadpool_serve(work_queue_t *wq, uint64_t *array, partition_method_t method);
+void thread_pool_serve(work_queue_t *wq, uint64_t *array, partition_method_t method);
 
 
 void quicksort_threadpool_parallelism(uint64_t *array, size_t size, partition_method_t method) {
-    //TODO : complete this
-    return;
+
+    work_queue_t *wq;
+    prepare_queue(size, &wq);
+    size_t processed = 0;
+
+#pragma omp parallel default(none) shared(array, wq, size, method, processed)
+    {
+        thread_pool_serve(wq, array, method);
+    }
 }
 
 
@@ -79,17 +86,24 @@ void quicksort_threadpool_parallelism(uint64_t *array, size_t size, partition_me
  * \param array Pointer to the array that will be partitioned or processed by the tasks.
  * \param method The partition method to be used by the `partition` function.
  */
-void threadpool_serve(work_queue_t *wq, uint64_t *array, partition_method_t method) {
+void thread_pool_serve(work_queue_t *wq, uint64_t *array, partition_method_t method) {
     job_t *job;
     while ((job = work_queue_pop(wq)) != NULL) {
-        printf("THREAD ID %d: %zu - %zu\n", omp_get_thread_num(), job->start, job->end);
-        printf("THE ARRAY IS: ");
-        PRINT_ARR(array, 10);
-        size_t pivot;
 
-        if (job->start >= job->end) continue;
+        if (job->start >= job->end) {
+            wq->total_processed++;
+            continue;
+        }
 
-        pivot = partition(array, job->start, job->end, method);
+        if (job->end - job->start < GROUP_MIN_DIST) {
+            quicksort_rec_seq(array, job->start, job->end, method);
+            wq->total_processed++;
+            continue;
+        }
+
+
+        size_t pivot = partition(array, job->start, job->end, method);
+
 
         job_t *left, *right;
         left = malloc(sizeof(job_t));
@@ -101,6 +115,9 @@ void threadpool_serve(work_queue_t *wq, uint64_t *array, partition_method_t meth
         right->start = pivot;
         right->end = job->end;
         work_queue_push(wq, right);
+
+        free(job);
+        wq->total_processed++;
     }
 }
 

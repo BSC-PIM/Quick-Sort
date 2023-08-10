@@ -2,6 +2,7 @@
 #define MERGEIDEA_WORK_QUEUE_H
 
 
+#include <stdbool.h>
 #include "job.h"
 #include "stdint.h"
 #include "pthread.h"
@@ -18,10 +19,13 @@ typedef struct work_queue_item {
 
 /// @brief queue data structure
 typedef struct work_queue {
-    uint64_t size;
+    size_t size;
     work_queue_item_t *head;
     pthread_mutex_t lock;
     pthread_cond_t cond;
+    size_t total_pop;
+    _Atomic size_t total_processed;
+    bool terminate;
 } work_queue_t;
 
 /// @brief work_queue_init is a function which initializes work_queue_t

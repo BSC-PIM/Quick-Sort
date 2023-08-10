@@ -8,12 +8,13 @@
 
 int WQ_THREAD_NUM = 1;
 
-int WAITING_THREADS = 0;
-
 
 void work_queue_init(work_queue_t *queue) {
     queue->size = 0;
+    queue->total_pop = 0;
+    queue->total_processed = 0;
     queue->head = NULL;
+    queue->terminate = 0;
     pthread_mutex_init(&queue->lock, NULL);
     pthread_cond_init(&queue->cond, NULL);
 }
@@ -54,30 +55,32 @@ job_t *work_queue_pop(work_queue_t *queue) {
 
     assert(queue != NULL);
 
-    if (WAITING_THREADS == WQ_THREAD_NUM - 1) {
-        pthread_cond_broadcast(&queue->cond);
-    }
-
     // lock queue
     pthread_mutex_lock(&queue->lock);
 
-    WAITING_THREADS++;
-
-
     // wait until queue is not empty (Not Busy Waiting)
-    while (queue->size == 0) {
-        pthread_cond_wait(&queue->cond, &queue->lock);
+    while (queue->size == 0 && queue->terminate == 0) {
+        if (queue->total_pop == queue->total_processed) {
+            // signal all the threads waiting on the queue
+            queue->terminate = 1;
+            pthread_cond_broadcast(&queue->cond);
+            break;
+
+        } else if (queue->terminate == 1) {
+            pthread_mutex_unlock(&queue->lock);
+            return NULL;
+        } else {
+            pthread_cond_wait(&queue->cond, &queue->lock);
+        }
     }
 
-    WAITING_THREADS--;
-
-    // wait limit acceded
-    if (queue->size == 0) {
+    if (queue->terminate == 1) {
         pthread_mutex_unlock(&queue->lock);
         return NULL;
     }
 
     // get last item
+    assert(queue->head != NULL);
     job_t *job = queue->head->job;
 
     // remove item from queue
@@ -89,6 +92,8 @@ job_t *work_queue_pop(work_queue_t *queue) {
 
     // decrease the size
     queue->size--;
+    // increment total pop
+    queue->total_pop++;
 
     pthread_mutex_unlock(&queue->lock);
 
