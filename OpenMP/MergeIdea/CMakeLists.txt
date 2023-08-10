@@ -10,8 +10,8 @@ add_executable(MergeIdea main.c
         commons/dataStructure/work_queue.h
         commons/dataStructure/job.h
         commons/dataStructure/work_queue.c
-        quicksort_mt_tp.c
-        quicksort_mt_tp.h
+        quicksort_mt.c
+        quicksort_mt.h
         utils/utils.h
         commons/quicksort_common.c
         commons/quicksort_common.h
