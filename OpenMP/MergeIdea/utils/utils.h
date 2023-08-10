@@ -11,10 +11,10 @@
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
 
 
-#define POPULATE_ARR(arr, size) \
+#define POPULATE_ARR(arr, size, limit) \
     do{                         \
         for (size_t i = 0; i < size; i++) { \
-        arr[i] = rand() % 100; \
+        arr[i] = rand() % limit; \
         }                           \
     } while(0)
 
