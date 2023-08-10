@@ -128,7 +128,7 @@ void quicksort_rec_seq(uint64_t *array, uint64_t start, uint64_t end, partition_
  * \param end The ending index of the range to be sorted.
  * \param method The partition method to be used.
  */
-void quicksort_stack_seq(uint64_t *array, uint64_t start, uint64_t end, partition_method_t method) {
+void quicksort_stack_seq(uint64_t *array, size_t start, size_t end, partition_method_t method) {
     // Non-recursive implementation of sequential quicksort
 
     size_t stack[end - start + 1];
@@ -141,15 +141,17 @@ void quicksort_stack_seq(uint64_t *array, uint64_t start, uint64_t end, partitio
         end = stack[top--];
         start = stack[top--];
 
+        if (start >= end) continue;
+
         size_t pivot = partition(array, start, end, method);
 
-        if (pivot - 1 > start) {
+        if (pivot >= start) {
             stack[++top] = start;
             stack[++top] = pivot - 1;
         }
 
-        if (pivot + 1 < end) {
-            stack[++top] = pivot + 1;
+        if (pivot < end) {
+            stack[++top] = pivot;
             stack[++top] = end;
         }
     }
