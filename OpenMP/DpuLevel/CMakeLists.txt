@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.26)
-project(MergeIdea C)
+project(DpuLevel C)
 
 set(CMAKE_C_STANDARD 99)
 
 set(CMAKE_C_FLAGS "-fopenmp")
 
 
-add_executable(MergeIdea main.c
+add_executable(DpuLevel main.c
         commons/dataStructure/work_queue.h
         commons/dataStructure/job.h
         commons/dataStructure/work_queue.c
