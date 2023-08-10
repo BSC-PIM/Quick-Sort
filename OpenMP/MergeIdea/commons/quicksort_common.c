@@ -3,7 +3,6 @@
 //
 
 #include "quicksort_common.h"
-#include "stdio.h"
 
 
 /**
@@ -93,6 +92,66 @@ size_t partition(uint64_t *array, size_t start, size_t end, partition_method_t m
             return hoare_partition(array, start, end);
         default:
             return lomuto_partition(array, start, end);
+    }
+}
+
+/**
+ * \brief Performs sequential quicksort recursively on an array.
+ *
+ * This function performs sequential quicksort recursively on an array in the specified range.
+ * It uses the specified partition method to partition the array and recursively sorts the sub-arrays
+ * before and after the pivot.
+ *
+ * \param array Pointer to the array that will be sorted.
+ * \param start The starting index of the range to be sorted.
+ * \param end The ending index of the range to be sorted.
+ * \param method The partition method to be used.
+ */
+void quicksort_rec_seq(uint64_t *array, uint64_t start, uint64_t end, partition_method_t method) {
+    if (start >= end) return;
+
+    size_t pivot = partition(array, start, end, method);
+
+    quicksort_rec_seq(array, start, pivot - 1, method);
+    quicksort_rec_seq(array, pivot, end, method);
+}
+
+/**
+ * \brief Performs sequential quicksort using a stack-based approach.
+ *
+ * This function performs sequential quicksort using a stack-based approach on an array in the specified range.
+ * It uses the specified partition method to partition the array and iteratively sorts the sub-arrays
+ * before and after the pivot using a stack to keep track of the range boundaries.
+ *
+ * \param array Pointer to the array that will be sorted.
+ * \param start The starting index of the range to be sorted.
+ * \param end The ending index of the range to be sorted.
+ * \param method The partition method to be used.
+ */
+void quicksort_stack_seq(uint64_t *array, uint64_t start, uint64_t end, partition_method_t method) {
+    // Non-recursive implementation of sequential quicksort
+
+    size_t stack[end - start + 1];
+    int64_t top = -1;
+
+    stack[++top] = start;
+    stack[++top] = end;
+
+    while (top >= 0) {
+        end = stack[top--];
+        start = stack[top--];
+
+        size_t pivot = partition(array, start, end, method);
+
+        if (pivot - 1 > start) {
+            stack[++top] = start;
+            stack[++top] = pivot - 1;
+        }
+
+        if (pivot + 1 < end) {
+            stack[++top] = pivot + 1;
+            stack[++top] = end;
+        }
     }
 }
 
