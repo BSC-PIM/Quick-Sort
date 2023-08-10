@@ -11,9 +11,8 @@
 #include "work_queue.h"
 #include "quicksort_common.h"
 
+extern size_t GROUP_MIN_DIST;
 
-extern int QS_THREAD_NUM;
-
-void quicksort_multi_thread_thread_pool(uint64_t *array, size_t size);
+void quicksort_task_parallelism(uint64_t *array, size_t size, partition_method_t method);
 
 #endif
