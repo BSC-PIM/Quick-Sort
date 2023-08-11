@@ -17,6 +17,6 @@ typedef enum {
 } pivot_type;
 
 
-void quicksort(uint32_t *arr, int low, int high, pivot_type type);
+void quicksort(uint64_t *arr, int low, int high, pivot_type type);
 
 #endif //BASELINE_QUICKSORT_H

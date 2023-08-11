@@ -5,7 +5,7 @@
 #define SIZE 16
 
 
-void populate(uint32_t *arr, int low, int high) {
+void populate(uint64_t *arr, int low, int high) {
 
 
     for (int i = low; i <= high; i++) {
@@ -15,14 +15,14 @@ void populate(uint32_t *arr, int low, int high) {
     // shuffle
     for (int i = low; i <= high; i++) {
         int j = rand() % (high - low + 1);
-        uint32_t temp = arr[i];
+        uint64_t temp = arr[i];
         arr[i] = arr[j];
         arr[j] = temp;
     }
 }
 
 
-void sample(uint32_t *arr, int low, int high) {
+void sample(uint64_t *arr, int low, int high) {
     for (int i = low; i <= high; i++) {
         printf("%d ", arr[i]);
     }
@@ -33,7 +33,7 @@ void sample(uint32_t *arr, int low, int high) {
 int main() {
 
     // 893 449 699 260 868 353 810 34 728 580 170 505 142 177 434 308
-    uint32_t arr[SIZE] = {893, 449, 699, 260, 868, 353, 810, 34, 728, 580, 170, 505, 142, 177, 434, 308};
+    uint64_t arr[SIZE] = {893, 449, 699, 260, 868, 353, 810, 34, 728, 580, 170, 505, 142, 177, 434, 308};
 
     sample(arr, 0, SIZE - 1);
 

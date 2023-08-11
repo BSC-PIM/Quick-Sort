@@ -2,44 +2,44 @@
 #include "quicksort.h"
 
 
-uint32_t pre_determined_pivot = 893;
+uint64_t pre_determined_pivot = 893;
 
 typedef struct pivot {
-    uint32_t value;
+    uint64_t value;
     int index;
 } pivot;
 
 
 static
-void swap(uint32_t *arr, int i, int j) {
-    uint32_t temp = arr[i];
+void swap(uint64_t *arr, int i, int j) {
+    uint64_t temp = arr[i];
     arr[i] = arr[j];
     arr[j] = temp;
 }
 
 static
-pivot choose_random_pivot(uint32_t *arr, int low, int high) {
+pivot choose_random_pivot(uint64_t *arr, int low, int high) {
     int pivot_index = low + rand() % (high - low + 1);
     return (pivot) {arr[pivot_index], pivot_index};
 }
 
 static
-pivot choose_first_pivot(uint32_t *arr, int low, int high) {
+pivot choose_first_pivot(uint64_t *arr, int low, int high) {
     return (pivot) {arr[low], low};
 }
 
 static
-pivot choose_last_pivot(uint32_t *arr, int low, int high) {
+pivot choose_last_pivot(uint64_t *arr, int low, int high) {
     return (pivot) {arr[high], high};
 }
 
 static
-pivot choose_predetermined_pivot(uint32_t *arr, int low, int high) {
+pivot choose_predetermined_pivot(uint64_t *arr, int low, int high) {
     return (pivot) {pre_determined_pivot, 0};
 }
 
 static
-pivot choose_pivot(uint32_t *arr, int low, int high, pivot_type type) {
+pivot choose_pivot(uint64_t *arr, int low, int high, pivot_type type) {
     switch (type) {
         case RANDOM:
             return choose_random_pivot(arr, low, high);
@@ -53,7 +53,7 @@ pivot choose_pivot(uint32_t *arr, int low, int high, pivot_type type) {
 }
 
 static
-int partition(uint32_t *arr, int low, int high, pivot_type type) {
+int partition(uint64_t *arr, int low, int high, pivot_type type) {
     pivot p = choose_pivot(arr, low, high, type);
     if (type == PREDETERMINED) {
         // the index is not valid for the predetermined pivot. use two directions partitioning algorithm
@@ -67,7 +67,7 @@ int partition(uint32_t *arr, int low, int high, pivot_type type) {
                 j--;
             }
             if (i < j) {
-                uint32_t tmp = arr[i];
+                uint64_t tmp = arr[i];
                 arr[i] = arr[j];
                 arr[j] = tmp;
             }
@@ -89,7 +89,7 @@ int partition(uint32_t *arr, int low, int high, pivot_type type) {
 }
 
 
-void quicksort(uint32_t *arr, int low, int high, pivot_type type) {
+void quicksort(uint64_t *arr, int low, int high, pivot_type type) {
 
     if (type == PREDETERMINED) {
         int pivot_index = partition(arr, low, high, type);
