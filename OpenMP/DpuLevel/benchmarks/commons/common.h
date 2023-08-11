@@ -9,7 +9,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <omp.h>
-#include <utils.h>
+#include "utils.h"
 #include <stdlib.h>
 #include <stdbool.h>
 

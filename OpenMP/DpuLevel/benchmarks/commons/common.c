@@ -26,11 +26,12 @@ void bench_function(bench_func func, uint64_t *arr, size_t size, size_t test_cou
         bool verified = verify(arr, size); // Call the verification function
         if (!verified) {
             printf("Verification failed!\n");
+            exit(1);
         }
     }
     avg /= (double) test_count;
 
-    printf("function took %f in average\n", avg);
+    printf("%f\n", avg * 1000);
 }
 
 
