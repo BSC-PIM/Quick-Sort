@@ -8,9 +8,10 @@
 
 #define THREADS_SIZE 6
 #define ARRAY_SIZE_FLAG 10000
+#define TEST_COUNT 100
 
 void populate_wrapper(uint64_t *arr, size_t size) {
-    POPULATE_ARR(arr, size, 100);
+    POPULATE_ARR(arr, size, INTMAX_MAX);
 }
 
 bool verify_wrapper(uint64_t *arr, size_t size) {
@@ -43,6 +44,8 @@ int main(int argc, char *argv[]) {
     bool (*verify)(uint64_t *, size_t) = &verify_wrapper;
 
     // benchmark the quicksort_task_parallelism
-    bench_function(quicksort_task_parallelism, array, array_size, 100, HOARE, setup, verify);
-
+    bench_function(quicksort_baseline, array, array_size, TEST_COUNT, HOARE, setup, verify);
+    bench_function(quicksort_task_parallelism, array, array_size, TEST_COUNT, HOARE, setup, verify);
+    bench_function(quicksort_threadpool_parallelism, array, array_size, TEST_COUNT, HOARE, setup, verify);
+    printf("\n");
 }
