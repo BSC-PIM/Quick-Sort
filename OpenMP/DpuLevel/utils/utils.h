@@ -18,6 +18,14 @@
         }                           \
     } while(0)
 
+
+#define COPY_ARR(src, dest, size) \
+    do{                           \
+        for (size_t i = 0; i < size; i++) { \
+            dest[i] = src[i]; \
+        } \
+    } while(0)
+
 #define PRINT_ARR(arr, size) \
     do{                      \
         for (size_t i = 0; i < size; i++) { \
