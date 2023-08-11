@@ -35,3 +35,5 @@ ax.annotate(f'Min: {min_y:.2f} ms at {min_x}',
             ha='center', fontsize=11)
 
 plt.show()
+
+fig.savefig('../results/min_chunk_size.png')
