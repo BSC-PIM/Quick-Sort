@@ -37,7 +37,7 @@ ax.text(0.95, 0.05, f"Slope: {slope_sci}\nIntercept: {intercept_sci}", transform
 plt.legend()
 plt.show()
 
-fig.savefig('../results/min_chunk_size.png')
+fig.savefig('../results/buffer_size.png')
 
 print("Slope:", slope_sci)
 print("Intercept:", intercept_sci)
