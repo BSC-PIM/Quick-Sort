@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <omp.h>
 #include "quicksort_common.h"
-#include "commons/common.h"
-#include "../quicksort_mt.h"
+#include "benchmarks/commons/common.h"
+#include "quicksort_mt.h"
 
 
 #define TEST_COUNT 50
