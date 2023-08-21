@@ -27,7 +27,7 @@ add_executable(Test tests/work_queue_test.c
 )
 
 
-add_executable(threads_num_bench benchmarks/benches/dpuLevel/threads_num_bench.c
+add_executable(threads_num_bench benchmarks/benches/sortBenches/threads_num_bench.c
         benchmarks/commons/common.c
         benchmarks/commons/common.h
         commons/dataStructure/work_queue.h
@@ -42,7 +42,7 @@ add_executable(threads_num_bench benchmarks/benches/dpuLevel/threads_num_bench.c
 )
 
 
-add_executable(min_chunk_size_bench benchmarks/benches/dpuLevel/min_chunk_size_bench.c
+add_executable(min_chunk_size_bench benchmarks/benches/sortBenches/min_chunk_size_bench.c
         benchmarks/commons/common.c
         benchmarks/commons/common.h
         commons/dataStructure/work_queue.h
@@ -57,7 +57,7 @@ add_executable(min_chunk_size_bench benchmarks/benches/dpuLevel/min_chunk_size_b
 )
 
 
-add_executable(buffer_size_bench benchmarks/benches/dpuLevel/buffer_size_bench.c
+add_executable(buffer_size_bench benchmarks/benches/sortBenches/buffer_size_bench.c
         benchmarks/commons/common.c
         benchmarks/commons/common.h
         commons/dataStructure/work_queue.h
@@ -72,7 +72,7 @@ add_executable(buffer_size_bench benchmarks/benches/dpuLevel/buffer_size_bench.c
 )
 
 
-add_executable(merge_partition_bench benchmarks/benches/hostLevel/merge_partition_bench.c
+add_executable(merge_partition_bench benchmarks/benches/distributionBenches/merge_partition_bench.c
         benchmarks/commons/common.c
         benchmarks/commons/common.h
         commons/dataStructure/work_queue.h
