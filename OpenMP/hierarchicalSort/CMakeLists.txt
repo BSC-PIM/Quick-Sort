@@ -57,8 +57,22 @@ add_executable(min_chunk_size_bench benchmarks/min_chunk_size_bench.c
 )
 
 
-
 add_executable(buffer_size_bench benchmarks/buffer_size_bench.c
+        benchmarks/commons/common.c
+        benchmarks/commons/common.h
+        commons/dataStructure/work_queue.h
+        commons/dataStructure/job.h
+        commons/dataStructure/work_queue.c
+        quicksort_mt.c
+        quicksort_mt.h
+        utils/utils.h
+        commons/quicksort_common.c
+        commons/quicksort_common.h
+        ../../libs/Flag-Parser/flag_parser.c
+)
+
+
+add_executable(merge_partition_bench benchmarks/merge_partition_bench.c
         benchmarks/commons/common.c
         benchmarks/commons/common.h
         commons/dataStructure/work_queue.h
@@ -74,7 +88,8 @@ add_executable(buffer_size_bench benchmarks/buffer_size_bench.c
 
 include_directories("utils" "commons/dataStructure" "commons" "../../libs/Flag-Parser")
 target_include_directories(Test PRIVATE "../../libs/Unity/src")
+
 target_include_directories(threads_num_bench PRIVATE "./" "benchmarks/commons")
 target_include_directories(min_chunk_size_bench PRIVATE "./" "benchmarks/commons")
 target_include_directories(buffer_size_bench PRIVATE "./" "benchmarks/commons")
-
+target_include_directories(merge_partition_bench PRIVATE "./" "benchmarks/commons")

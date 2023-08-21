@@ -123,7 +123,7 @@ void test_multiThreadPop_shouldPopAllTheElements(void) {
 
     // check the size of the queue
     TEST_ASSERT_EQUAL_INT64_MESSAGE(200, pushed + popped, "RACE CONDITION ON POP! ");
-    TEST_ASSERT_EQUAL_INT64_MESSAGE(wq->size, pushed - popped, "RACE CONDITION ON POP");
+    TEST_ASSERT_EQUAL_INT64_MESSAGE(0, pushed - popped, "RACE CONDITION ON POP");
     TEST_ASSERT_NULL_MESSAGE(wq->head, "INCORRECT JOB POP");
     TEST_ASSERT_EQUAL_INT64_MESSAGE(wq->total_pop, popped, "INCORRECT JOB POP");
 }

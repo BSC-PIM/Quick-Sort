@@ -1,7 +1,7 @@
 #include "quicksort_mt.h"
 
 
-size_t GROUP_MIN_DIST;
+size_t GROUP_MIN_DIST = 128;
 
 void task_serve(uint64_t *array, size_t start, size_t end, partition_method_t method);
 
