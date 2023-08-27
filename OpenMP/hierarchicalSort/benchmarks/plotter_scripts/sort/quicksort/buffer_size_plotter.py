@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-with open('../results/buffer_size.csv', 'r') as f:
+with open('../../../results/sort/quicksort/buffer_size.csv', 'r') as f:
     data = f.read()
 
 data = data.split('\n')
@@ -37,7 +37,7 @@ ax.text(0.95, 0.05, f"Slope: {slope_sci}\nIntercept: {intercept_sci}", transform
 plt.legend()
 plt.show()
 
-fig.savefig('../results/buffer_size.png')
+fig.savefig('../../../results/sort/quicksort/buffer_size.png')
 
 print("Slope:", slope_sci)
 print("Intercept:", intercept_sci)

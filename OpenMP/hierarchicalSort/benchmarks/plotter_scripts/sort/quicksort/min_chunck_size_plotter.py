@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-with open('../results/min_chunk_size.csv', 'r') as f:
+with open('../../../results/sort/quicksort/min_chunk_size.csv', 'r') as f:
     data = f.read()
 
 data = data.split('\n')
@@ -36,4 +36,4 @@ ax.annotate(f'Min: {min_y:.2f} ms at {min_x}',
 
 plt.show()
 
-fig.savefig('../results/min_chunk_size.png')
+fig.savefig('../../../results/sort/quicksort/min_chunk_size.png')

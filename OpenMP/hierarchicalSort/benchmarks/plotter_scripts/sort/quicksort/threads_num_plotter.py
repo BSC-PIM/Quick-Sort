@@ -7,7 +7,7 @@ omp_task = [0] * 5
 threadpool = [0] * 5
 
 # read CSV from  ../results/threads_num.csv
-with open('../results/threads_num.csv', 'r') as f:
+with open('../../../results/sort/quicksort/threads_num.csv', 'r') as f:
     data = f.read()
 
 # split CSV into lines
@@ -71,4 +71,4 @@ fig.tight_layout()
 plt.show()
 
 # save to ../results/threads_num.png
-fig.savefig('../results/threads_num.png')
+fig.savefig('../../../results/sort/quicksort/threads_num.png')
