@@ -2,12 +2,11 @@
 #include <stdlib.h>
 #include <getopt.h>
 
-#include "quicksort_mt.h"
+#include "msb_radix_sequential_in_place.h"
+#include "msb_radix_parallel_in_place.h"
 #include "common.h"
 #include "flag_parser.h"
 
-#define THREADS_SIZE 6
-#define ARRAY_SIZE_FLAG 10000
 #define TEST_COUNT 100
 
 
@@ -24,7 +23,7 @@
  * @warning Using this function with large sizes might lead to performance issues.
  */
 void populate_wrapper(uint64_t *arr, size_t size) {
-    POPULATE_ARR(arr, size, INTMAX_MAX);
+    POPULATE_ARR(arr, size, 0xFFFF);
 }
 
 
@@ -43,7 +42,7 @@ bool verify_wrapper(uint64_t *arr, size_t size) {
 
 int main(int argc, char *argv[]) {
     int threads = 6;
-    size_t array_size = 1000000;
+    size_t array_size = 10000000;
 
     // Define the flags
     struct Flag flags[] = {
@@ -65,6 +64,7 @@ int main(int argc, char *argv[]) {
     // Parse the flags
     parse_flags(argc, argv, flags, sizeof(flags) / sizeof(flags[0]), Usage);
 
+
     // TODO implement optional arg
     if (!flags[0].present) {
         printf("use default setup for `thread` flag. threads := %d\n", threads);
@@ -74,22 +74,23 @@ int main(int argc, char *argv[]) {
     }
 
 
-    uint64_t array[array_size];
-
-    // set up the threads
+    // IGNORE THE FLAGS REMOVE THIS LATER
+    threads= 12;
     omp_set_num_threads(threads);
-    GROUP_MIN_DIST = 128;
+    RUNNER_THREADS_NUM = threads;
+    RSORT_GROUP_MIN_DIST = 1 << 16;
+
+    uint64_t *array;
+    array = (uint64_t *) malloc(array_size * sizeof(uint64_t));
+
 
     // create a pointer function which is used for setup (get array pointer and array size then call POPULATE_ARR on it)
     void (*setup)(uint64_t *, size_t) = &populate_wrapper;
     bool (*verify)(uint64_t *, size_t) = &verify_wrapper;
 
-    // benchmark the quicksort baseline model (sequential)
-    bench_function(quicksort_baseline, array, array_size, TEST_COUNT, HOARE, setup, verify);
 
-    // benchmark the quicksort task parallelism model
-    bench_function(quicksort_task_parallelism, array, array_size, TEST_COUNT, HOARE, setup, verify);
+    // rsort_bench_function(msb_radix_sort_sequential_in_place, array, array_size, 6, TEST_COUNT, setup, verify);
 
-    // benchmark the quicksort threadpool model
-    bench_function(quicksort_threadpool_parallelism, array, array_size, TEST_COUNT, HOARE, setup, verify);
+    rsort_bench_function(msb_radix_sort_parallel_in_place, array, array_size, 6, TEST_COUNT, setup, verify);
+
 }
