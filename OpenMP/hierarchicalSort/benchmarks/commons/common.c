@@ -13,10 +13,9 @@
  *
  * @note The array should have at least `size` elements.
  */
-bool verify(uint64_t *arr, size_t size) {
-    for (int i = 0; i < size - 1; i++) {
+bool verify(const uint64_t *arr, size_t size) {
+    for (int i = 0; i < size - 1; i++) { ;
         if (arr[i] > arr[i + 1]) {
-            printf("arr[%d] = %lu > arr[%d] = %lu\n", i, arr[i], i + 1, arr[i + 1]);
             return false;
         }
     }
@@ -33,7 +32,7 @@ bool verify(uint64_t *arr, size_t size) {
  * After calling the benchmarked function, a verification function is called to verify the results.
  * The average execution time across all tests is calculated and printed in milliseconds.
  *
- * @param func The function to be benchmarked.
+ * @param qsort The function to be benchmarked.
  * @param arr Pointer to the array used for benchmarking.
  * @param size Size of the array.
  * @param test_count Number of times to benchmark the function.
@@ -44,13 +43,14 @@ bool verify(uint64_t *arr, size_t size) {
  * @note The array should have at least `size` elements.
  * @warning Make sure the setup and verification functions work correctly with the benchmarked function.
  */
-void bench_function(bench_func func, uint64_t *arr, size_t size, size_t test_count, partition_method_t method,
-                    setup_func setup, verify_func verify) {
+void
+qsort_bench_function(qsort_bench_func qsort, uint64_t *arr, size_t size, size_t test_count, partition_method_t method,
+                     setup_func setup, verify_func verify) {
     double start, end, avg = 0;
     for (int i = 0; i < test_count; i++) {
         setup(arr, size); // Call the setup function before benchmarking
         start = omp_get_wtime();
-        func(arr, size, method);
+        qsort(arr, size, method);
         end = omp_get_wtime();
         avg += (end - start);
         bool verified = verify(arr, size); // Call the verification function
@@ -65,16 +65,23 @@ void bench_function(bench_func func, uint64_t *arr, size_t size, size_t test_cou
 }
 
 
-/**
- * @brief Baseline quicksort function for comparison.
- *
- * This function implements a baseline version of the quicksort algorithm.
- * It operates on an array of `uint64_t` elements and sorts them in ascending order.
- *
- * @param arr Pointer to the array to be sorted.
- * @param size Size of the array.
- * @param method The partition method used by the quicksort algorithm.
- */
-void quicksort_baseline(uint64_t *arr, size_t size, partition_method_t method) {
-    quicksort_rec_seq(arr, 0, size - 1, method);
+void
+rsort_bench_function(rsort_bench_func rsort, uint64_t *arr, size_t size, uint8_t level, size_t test_count,
+                     setup_func setup, verify_func verify) {
+    double start, end, avg = 0;
+    for (int i = 0; i < test_count; i++) {
+        setup(arr, size); // Call the setup function before benchmarking
+        start = omp_get_wtime();
+        rsort(arr, size, level);
+        end = omp_get_wtime();
+        avg += (end - start);
+        bool verified = verify(arr, size); // Call the verification function
+        if (!verified) {
+            printf("Verification failed!\n");
+            exit(1);
+        }
+    }
+    avg /= (double) test_count;
+
+    printf("%f\n", avg * 1000);
 }
