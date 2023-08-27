@@ -42,7 +42,7 @@ void test_multiplePushOnQueue_shouldInsertAllItemsInOrder(void) {
     populate_wq(wq, jobs, JOBS_N);
 
     for (int i = JOBS_N - 1; i >= 0; i--) {
-        TEST_ASSERT_EQUAL_INT64_MESSAGE(work_queue_pop(wq)->start, i, "INCORRECT APPEND");
+        TEST_ASSERT_EQUAL_INT64_MESSAGE(work_queue_pop(wq), jobs[i], "INCORRECT APPEND");
     }
 
 }
@@ -123,9 +123,9 @@ void test_multiThreadPop_shouldPopAllTheElements(void) {
 
     // check the size of the queue
     TEST_ASSERT_EQUAL_INT64_MESSAGE(200, pushed + popped, "RACE CONDITION ON POP! ");
-    TEST_ASSERT_EQUAL_INT64_MESSAGE(0, pushed - popped, "RACE CONDITION ON POP");
-    TEST_ASSERT_NULL_MESSAGE(wq->head, "INCORRECT JOB POP");
+    TEST_ASSERT_EQUAL_INT64_MESSAGE(pushed - popped, wq->size, "RACE CONDITION ON POP");
     TEST_ASSERT_EQUAL_INT64_MESSAGE(wq->total_pop, popped, "INCORRECT JOB POP");
+    TEST_ASSERT_NULL(wq->head);
 }
 
 int main() {
