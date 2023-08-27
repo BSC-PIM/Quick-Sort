@@ -1,7 +1,7 @@
 #include "quicksort_mt.h"
 
 
-size_t GROUP_MIN_DIST = 128;
+size_t QSORT_GROUP_MIN_DIST = 128;
 
 void task_serve(uint64_t *array, size_t start, size_t end, partition_method_t method);
 
@@ -41,7 +41,7 @@ void quicksort_task_parallelism(uint64_t *array, size_t size, partition_method_t
 void task_serve(uint64_t *array, size_t start, size_t end, partition_method_t method) {
     if (start >= end) return;
 
-    if (end - start < GROUP_MIN_DIST) {
+    if (end - start < QSORT_GROUP_MIN_DIST) {
         quicksort_rec_seq(array, start, end, method);
         return;
     }
@@ -95,7 +95,7 @@ void thread_pool_serve(work_queue_t *wq, uint64_t *array, partition_method_t met
             continue;
         }
 
-        if (job->end - job->start < GROUP_MIN_DIST) {
+        if (job->end - job->start < QSORT_GROUP_MIN_DIST) {
             quicksort_rec_seq(array, job->start, job->end, method);
             wq->total_processed++;
             continue;
