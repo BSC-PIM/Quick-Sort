@@ -19,7 +19,7 @@ void work_queue_init(work_queue_t *queue) {
     pthread_cond_init(&queue->cond, NULL);
 }
 
-void work_queue_push(work_queue_t *queue, job_t *job) {
+void work_queue_push(work_queue_t *queue, void *job) {
     // check if queue is not null
     if (queue == NULL) return;
 
@@ -51,7 +51,7 @@ void work_queue_push(work_queue_t *queue, job_t *job) {
     pthread_mutex_unlock(&queue->lock);
 }
 
-job_t *work_queue_pop(work_queue_t *queue) {
+void *work_queue_pop(work_queue_t *queue) {
 
     assert(queue != NULL);
 

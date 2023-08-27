@@ -12,7 +12,7 @@ extern int WQ_THREAD_NUM;
 
 /// @brief work_queue_item_t is a struct which contains 
 typedef struct work_queue_item {
-    job_t *job;
+    void *job;
     struct work_queue_item *next;
     struct work_queue_item *prev;
 } work_queue_item_t;
@@ -36,13 +36,13 @@ void work_queue_init(work_queue_t *queue);
 /// @note this function is thread safe
 /// @param queue is a pointer to work_queue_t
 /// @param job is a pointer to job_t
-void work_queue_push(work_queue_t *queue, job_t *job);
+void work_queue_push(work_queue_t *queue, void *job);
 
 /// @brief work_queue_pop is a function which pops job from work_queue_t
 /// @note this function is thread safe
 /// @param queue is a pointer to work_queue_t
 /// @return pointer to job_t
-job_t *work_queue_pop(work_queue_t *queue);
+void * work_queue_pop(work_queue_t *queue);
 
 /// @brief work_queue_destroy is a function which destroys work_queue_t
 /// @param queue is a pointer to work_queue_t
