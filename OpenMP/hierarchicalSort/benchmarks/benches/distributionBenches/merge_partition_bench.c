@@ -7,7 +7,7 @@
 
 
 #define TEST_COUNT 50
-#define WORKER_NUM 64
+#define WORKER_NUM 8
 
 
 void sort_and_tick(uint64_t *arr, size_t size, partition_method_t method, double *time) {
@@ -38,13 +38,13 @@ uint64_t get_num_from_worker(size_t *ptr) {
 
 int main(int argc, char *argv[]) {
     int threads = 6;
-    size_t buffer_size = 1000000;
+    size_t buffer_size = 10000000;
 
     // set up the threads
     omp_set_num_threads(threads);
 
     // init buffer
-    uint64_t buffer[buffer_size];
+    uint64_t *buffer = malloc(sizeof(uint64_t) * buffer_size);
 
     // init workers
     size_t temp = buffer_size;
@@ -112,7 +112,7 @@ int main(int argc, char *argv[]) {
         end = omp_get_wtime();
         avg_master += (end - start);
         avg_total += (end - start) + max_time;
-        verify(output, buffer_size);
+        if (!verify(output, buffer_size)) exit(1);
         free(output);
     }
     avg_total /= TEST_COUNT;
