@@ -17,17 +17,16 @@
  */
 typedef uint8_t byte;
 
-byte get_byte_at(uint64_t number, int at) {
+inline byte get_byte_at(uint64_t number, int at) {
     int available_bytes = sizeof(number);
-    if (at > available_bytes - 1) {
-        fprintf(stderr, "Invalid byte position\n");
-        exit(EXIT_FAILURE);
-    }
+//    if (at > available_bytes - 1) {
+//        fprintf(stderr, "Invalid byte position\n");
+//        exit(EXIT_FAILURE);
+//    }
 
     byte result = (number >> ((available_bytes - at - 1) * 8)) & 0xFF;
     return result;
 }
-
 
 
 /**
@@ -48,12 +47,12 @@ byte get_byte_at(uint64_t number, int at) {
  *
  * @note The `cnt` array should have at least `buckets_n` elements allocated.
  */
-byte create_histograms(uint16_t buckets_n, size_t *cnt, uint64_t *array, size_t start, size_t end, uint8_t level,
-                       bool is_parallel) {
+inline byte create_histograms(uint16_t buckets_n, size_t *cnt, uint64_t *array, size_t start, size_t end, uint8_t level,
+                              bool is_parallel) {
     byte max = 0; // fix max data type
 
     // OpenMP parallel for loop to process array elements and construct histograms
-#pragma omp parallel for if(is_parallel) default(none) firstprivate(buckets_n, start, end, level) reduction(max:max) reduction(+:cnt[:buckets_n]) schedule(static) shared(array)
+ #pragma omp parallel for if(is_parallel) default(none) firstprivate(buckets_n, start, end, level) reduction(max:max) reduction(+:cnt[:buckets_n]) schedule(static) shared(array)
     for (size_t i = start; i < end; i++) {
         byte ba = get_byte_at(array[i], level);
         if (ba > max) max = ba;
@@ -61,4 +60,28 @@ byte create_histograms(uint16_t buckets_n, size_t *cnt, uint64_t *array, size_t 
     }
 
     return max;
+}
+
+
+/**
+ * @brief Compute prefix sum for bucket indices based on counts.
+ *
+ * This function computes the prefix sum for bucket indices using the given count array `cnt`.
+ * The computed prefix sums are stored in the `gh` (start indices) and `gt` (end indices) arrays.
+ *
+ * @param start The start index for the prefix sum computation.
+ * @param cnt Pointer to the array containing bucket counts.
+ * @param max Maximum byte value encountered in the array.
+ * @param gh Pointer to the array for storing start indices.
+ * @param gt Pointer to the array for storing end indices.
+ */
+void prefix_sum(size_t start, const size_t *cnt, uint8_t max, size_t *gh, size_t *gt) {
+    gh[0] = start;
+    gt[0] = start + cnt[0];
+
+    // Use prefix sum for cnt
+    for (size_t i = 1; i < max + 1; i++) {
+        gh[i] = gt[i - 1];
+        gt[i] = gt[i - 1] + cnt[i];
+    }
 }

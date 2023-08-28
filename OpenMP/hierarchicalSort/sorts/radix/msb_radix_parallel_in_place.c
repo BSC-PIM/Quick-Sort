@@ -190,13 +190,7 @@ void mrpip_step(uint64_t *array, size_t start, size_t end, uint8_t level, uint8_
     byte max = create_histograms(buckets_n, cnt, array, start, end, level, true);
 
     size_t gh[max + 1], gt[max + 1];
-    gh[0] = start;
-    gt[0] = start + cnt[0];
-
-    for (uint16_t i = 1; i < max + 1; i++) {
-        gh[i] = gt[i - 1];
-        gt[i] = gt[i - 1] + cnt[i];
-    }
+    prefix_sum(start, cnt, max, gh, gt);
 
     while (1) {
         size_t processors_buckets_head[threads_num][max + 1];

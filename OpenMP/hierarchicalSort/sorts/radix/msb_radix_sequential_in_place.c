@@ -2,7 +2,6 @@
 
 void sort_and_swap(uint64_t *array, uint8_t level, uint8_t max, size_t *gh, const size_t *gt);
 
-void prefix_sum(size_t start, const size_t *cnt, uint8_t max, size_t *gh, size_t *gt);
 
 /**
  * @brief Perform a step of the MRSSIP (Most-Significant Bit Radix Sequential In-Place) sorting algorithm on a portion of an array.
@@ -32,17 +31,6 @@ void mrssip_step(uint64_t *array, size_t start, size_t end, uint8_t level) { // 
         for (uint16_t i = 0; i < max + 1; i++) {
             mrssip_step(array, gt[i] - cnt[i], gt[i], level + 1);
         }
-    }
-}
-
-void prefix_sum(size_t start, const size_t *cnt, uint8_t max, size_t *gh, size_t *gt) {
-    gh[0] = start;
-    gt[0] = start + cnt[0];
-
-    // Use prefix sum for cnt
-    for (size_t i = 1; i < max + 1; i++) {
-        gh[i] = gt[i - 1];
-        gt[i] = gt[i - 1] + cnt[i];
     }
 }
 

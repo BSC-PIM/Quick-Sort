@@ -16,5 +16,7 @@ byte create_histograms(uint16_t buckets_n, size_t *cnt, uint64_t *array, size_t 
 
 byte get_byte_at(uint64_t number, int at);
 
+void prefix_sum(size_t start, const size_t *cnt, uint8_t max, size_t *gh, size_t *gt);
+
 
 #endif //DPULEVEL_RADIXSORT_COMMON_H
