@@ -1,7 +1,3 @@
-//
-// Created by halfblood on 8/9/23.
-//
-
 #ifndef MERGEIDEA_UTILS_H
 #define MERGEIDEA_UTILS_H
 
