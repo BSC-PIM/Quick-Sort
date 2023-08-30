@@ -16,12 +16,12 @@ void task_serve(uint64_t *array, size_t start, size_t end, partition_method_t me
  * \param array Pointer to the array that will be sorted.
  * \param size The size of the array.
  */
-void quicksort_task_parallelism(uint64_t *array, size_t size, partition_method_t method) {
-#pragma omp parallel default(none) shared(array, size, method)
+void quicksort_task_parallelism(uint64_t *array, size_t size) {
+#pragma omp parallel default(none) shared(array, size)
     {
 #pragma omp single
         {
-            task_serve(array, 0, size - 1, method);
+            task_serve(array, 0, size - 1, HOARE);
         }
     }
 }
@@ -30,7 +30,7 @@ void quicksort_task_parallelism(uint64_t *array, size_t size, partition_method_t
  * \brief Performs recursive task-based quicksort on a subarray.
  *
  * This function performs recursive task-based quicksort on a subarray of the original array.
- * If the subarray size is smaller than a certain threshold, sequential quicksort is performed instead.
+ * If the subarray partition_size is smaller than a certain threshold, sequential quicksort is performed instead.
  * Otherwise, the subarray is divided into two parts using the Hoare partition scheme, and sorting tasks are created
  * for each part. The tasks are then executed by multiple threads in a parallel region.
  *
@@ -66,15 +66,15 @@ void prepare_queue(size_t size, work_queue_t **wq);
 void thread_pool_serve(work_queue_t *wq, uint64_t *array, partition_method_t method);
 
 
-void quicksort_threadpool_parallelism(uint64_t *array, size_t size, partition_method_t method) {
+void quicksort_threadpool_parallelism(uint64_t *array, size_t size) {
 
     work_queue_t *wq;
     prepare_queue(size, &wq);
     size_t processed = 0;
 
-#pragma omp parallel default(none) shared(array, wq, size, method, processed)
+#pragma omp parallel default(none) shared(array, wq, size, processed)
     {
-        thread_pool_serve(wq, array, method);
+        thread_pool_serve(wq, array, HOARE);
     }
 }
 
