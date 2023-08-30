@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
                         "  program_name --threads 4 --array-size 100  --group-min-dist 128 # Run with 4 threads and array size 100 and partition-min-dist 128\n";
 
     parse_flags(argc, argv, flags, sizeof(flags) / sizeof(flags[0]), Usage);
-    uint64_t array[array_size];
+    uint64_t *array = malloc(sizeof(uint64_t) * array_size);
 
     // set up the threads
     omp_set_num_threads(threads);
