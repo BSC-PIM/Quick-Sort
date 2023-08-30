@@ -1,13 +1,13 @@
 #include "radixsort_common.h"
 
 /**
- * @brief Extracts a byte from a uint64_t number at the specified position.
+ * @brief Extracts a byte from a typeof(T) number at the specified position.
  *
- * This function extracts a byte from the given uint64_t number at the specified
+ * This function extracts a byte from the given typeof(T) number at the specified
  * position. The position is counted from the most significant byte (MSB) side,
  * starting with 0 for the MSB itself.
  *
- * @param number The uint64_t number from which to extract the byte.
+ * @param number The typeof(T) number from which to extract the byte.
  * @param at The position of the byte to extract (0 for MSB, 7 for LSB).
  * @return The extracted byte.
  *
@@ -17,8 +17,8 @@
  */
 typedef uint8_t byte;
 
-inline byte get_byte_at(uint64_t number, int at) {
-    int available_bytes = sizeof(number);
+inline byte get_byte_at(T number, int at) {
+    uint8_t available_bytes = sizeof(number);
 //    if (at > available_bytes - 1) {
 //        fprintf(stderr, "Invalid byte position\n");
 //        exit(EXIT_FAILURE);
@@ -47,7 +47,7 @@ inline byte get_byte_at(uint64_t number, int at) {
  *
  * @note The `cnt` array should have at least `buckets_n` elements allocated.
  */
-inline byte create_histograms(uint16_t buckets_n, size_t *cnt, uint64_t *array, size_t start, size_t end, uint8_t level,
+inline byte create_histograms(uint16_t buckets_n, size_t *cnt, T *array, size_t start, size_t end, uint8_t level,
                               bool is_parallel) {
     byte max = 0; // fix max data type
 

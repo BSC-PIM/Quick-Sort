@@ -1,7 +1,3 @@
-//
-// Created by halfblood on 8/9/23.
-//
-
 #include "quicksort_common.h"
 
 
@@ -20,11 +16,11 @@
  *
  * \note The partitioned elements are modified in-place within the array.
  */
-size_t hoare_partition(uint64_t *array, size_t start, size_t end) {
+size_t hoare_partition(T *array, size_t start, size_t end) {
 
 
     size_t k, j;
-    uint64_t pivot = array[end];
+    T pivot = array[end];
     for (k = start, j = end; 1; k++, j--) {
         while (array[k] < pivot)
             k++;
@@ -53,8 +49,8 @@ size_t hoare_partition(uint64_t *array, size_t start, size_t end) {
  *
  * \note The partitioned elements are modified in-place within the array.
  */
-size_t lomuto_partition(uint64_t *array, size_t start, size_t end) {
-    uint64_t pivot_value = array[end];
+size_t lomuto_partition(T *array, size_t start, size_t end) {
+    T pivot_value = array[end];
     size_t i = start;
 
     for (size_t j = start; j < end; j++) {
@@ -84,7 +80,7 @@ size_t lomuto_partition(uint64_t *array, size_t start, size_t end) {
  *
  * \note The partitioned elements are modified in-place within the array.
  */
-size_t partition(uint64_t *array, size_t start, size_t end, partition_method_t method) {
+size_t partition(T *array, size_t start, size_t end, partition_method_t method) {
     switch (method) {
         case LOMUTO:
             return lomuto_partition(array, start, end);
@@ -107,7 +103,7 @@ size_t partition(uint64_t *array, size_t start, size_t end, partition_method_t m
  * \param end The ending index of the range to be sorted.
  * \param method The partition method to be used.
  */
-void quicksort_rec_seq(uint64_t *array, uint64_t start, uint64_t end, partition_method_t method) {
+void quicksort_rec_seq(T *array, size_t start, size_t end, partition_method_t method) { // NOLINT(*-no-recursion)
     if (start >= end) return;
 
     size_t pivot = partition(array, start, end, method);
@@ -128,11 +124,11 @@ void quicksort_rec_seq(uint64_t *array, uint64_t start, uint64_t end, partition_
  * \param end The ending index of the range to be sorted.
  * \param method The partition method to be used.
  */
-void quicksort_stack_seq(uint64_t *array, size_t start, size_t end, partition_method_t method) {
+void quicksort_stack_seq(T *array, size_t start, size_t end, partition_method_t method) {
     // Non-recursive implementation of sequential quicksort
 
     size_t stack[end - start + 1];
-    int64_t top = -1;
+    int64_t top = 0;
 
     stack[++top] = start;
     stack[++top] = end;

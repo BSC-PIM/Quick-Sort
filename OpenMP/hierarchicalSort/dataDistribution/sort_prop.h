@@ -1,9 +1,8 @@
-//
-// Created by halfblood on 8/30/23.
-//
-
 #ifndef DPULEVEL_SORT_PROP_H
 #define DPULEVEL_SORT_PROP_H
+
+
+#include "config.h"
 
 
 typedef enum sort_memory_type {
@@ -13,8 +12,8 @@ typedef enum sort_memory_type {
 
 typedef struct sort_props {
     sort_memory_type_t type;
-    uint64_t *input;
-    uint64_t *output;
+    T *input;
+    T *output;
     size_t partition_size;
     double *timer; //time_to_sort
 } sort_props_t;

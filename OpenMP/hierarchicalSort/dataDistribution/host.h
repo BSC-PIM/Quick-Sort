@@ -6,7 +6,7 @@
 
 typedef struct host {
     size_t host_mem_size;
-    uint64_t thread_count;
+    uint16_t thread_count;
 
     uint16_t worker_count;
     uint8_t tasklet_count;

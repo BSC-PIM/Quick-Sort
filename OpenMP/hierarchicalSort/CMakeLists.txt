@@ -28,6 +28,7 @@ add_executable(DpuLevel main.c
         dataDistribution/worker.h
         dataDistribution/host.h
         dataDistribution/sort_prop.h
+        config.h
 )
 
 
@@ -142,7 +143,7 @@ add_executable(merge_partition_bench benchmarks/benches/distributionBenches/merg
         ../../libs/Flag-Parser/flag_parser.c
 )
 
-include_directories("utils" "commons/dataStructure" "commons" "../../libs/Flag-Parser")
+include_directories("." "utils" "commons/dataStructure" "commons" "../../libs/Flag-Parser")
 target_include_directories(Test PRIVATE "../../libs/Unity/src")
 
 target_include_directories(threads_num_bench_qsort PRIVATE "./" "benchmarks/commons" "./sorts/quicksort")

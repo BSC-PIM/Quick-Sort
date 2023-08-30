@@ -1,6 +1,6 @@
 #include "msb_radix_sequential_in_place.h"
 
-void sort_and_swap(uint64_t *array, uint8_t level, uint8_t max, size_t *gh, const size_t *gt);
+void sort_and_swap(T *array, uint8_t level, uint8_t max, size_t *gh, const size_t *gt);
 
 
 /**
@@ -14,7 +14,7 @@ void sort_and_swap(uint64_t *array, uint8_t level, uint8_t max, size_t *gh, cons
  * @param end Index indicating the end of the portion to be sorted (exclusive).
  * @param level Byte level used for sorting.
  */
-void mrssip_step(uint64_t *array, size_t start, size_t end, uint8_t level) { // NOLINT(*-no-recursion)
+void mrssip_step(T *array, size_t start, size_t end, uint8_t level) { // NOLINT(*-no-recursion)
 
     size_t buckets_n = 1 << BYTE_SIZE;
     size_t cnt[buckets_n];
@@ -34,9 +34,9 @@ void mrssip_step(uint64_t *array, size_t start, size_t end, uint8_t level) { // 
     }
 }
 
-void sort_and_swap(uint64_t *array, uint8_t level, uint8_t max, size_t *gh,
+void sort_and_swap(T *array, uint8_t level, uint8_t max, size_t *gh,
                    const size_t *gt) {// Iterate over buckets and sort in-place
-    uint64_t temp;
+    T temp;
     byte temp_b;
     for (size_t i = 0; i < max + 1; i++) {
         while (gh[i] < gt[i]) {
@@ -60,7 +60,7 @@ void sort_and_swap(uint64_t *array, uint8_t level, uint8_t max, size_t *gh,
  * @param array Pointer to the array to be sorted.
  * @param size Size of the array.
  */
-void msb_radix_sort_sequential_in_place(uint64_t *array, size_t size, uint8_t level) {
+void msb_radix_sort_sequential_in_place(T *array, size_t size, uint8_t level) {
     mrssip_step(array, 0, size, level);
 }
 

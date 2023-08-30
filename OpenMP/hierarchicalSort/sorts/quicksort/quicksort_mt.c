@@ -3,7 +3,7 @@
 
 size_t QSORT_GROUP_MIN_DIST = 128;
 
-void task_serve(uint64_t *array, size_t start, size_t end, partition_method_t method);
+void task_serve(T *array, size_t start, size_t end, partition_method_t method);
 
 /**
  * \brief Performs parallel quicksort on an array using task-based parallelism.
@@ -16,7 +16,7 @@ void task_serve(uint64_t *array, size_t start, size_t end, partition_method_t me
  * \param array Pointer to the array that will be sorted.
  * \param size The size of the array.
  */
-void quicksort_task_parallelism(uint64_t *array, size_t size) {
+void quicksort_task_parallelism(T *array, size_t size) {
 #pragma omp parallel default(none) shared(array, size)
     {
 #pragma omp single
@@ -38,7 +38,7 @@ void quicksort_task_parallelism(uint64_t *array, size_t size) {
  * \param start The starting index of the subarray.
  * \param end The ending index of the subarray.
  */
-void task_serve(uint64_t *array, size_t start, size_t end, partition_method_t method) {
+void task_serve(T *array, size_t start, size_t end, partition_method_t method) {
     if (start >= end) return;
 
     if (end - start < QSORT_GROUP_MIN_DIST) {
@@ -63,10 +63,10 @@ void task_serve(uint64_t *array, size_t start, size_t end, partition_method_t me
 
 void prepare_queue(size_t size, work_queue_t **wq);
 
-void thread_pool_serve(work_queue_t *wq, uint64_t *array, partition_method_t method);
+void thread_pool_serve(work_queue_t *wq, T *array, partition_method_t method);
 
 
-void quicksort_threadpool_parallelism(uint64_t *array, size_t size) {
+void quicksort_threadpool_parallelism(T *array, size_t size) {
 
     work_queue_t *wq;
     prepare_queue(size, &wq);
@@ -86,7 +86,7 @@ void quicksort_threadpool_parallelism(uint64_t *array, size_t size) {
  * \param array Pointer to the array that will be partitioned or processed by the tasks.
  * \param method The partition method to be used by the `partition` function.
  */
-void thread_pool_serve(work_queue_t *wq, uint64_t *array, partition_method_t method) {
+void thread_pool_serve(work_queue_t *wq, T *array, partition_method_t method) {
     job_t *job;
     while ((job = work_queue_pop(wq)) != NULL) {
 

@@ -1,7 +1,7 @@
 #include "msb_radix_parallel_in_place.h"
 
 
-uint8_t RUNNER_THREADS_NUM = 6;
+uint16_t RUNNER_THREADS_NUM = 6;
 
 extern size_t RSORT_GROUP_MIN_DIST = 128;
 
@@ -23,12 +23,12 @@ extern size_t RSORT_MAX_BYTE_THRESHOLD = 64;
  *
  * @note The arrays `gh`, `gt`, `processors_buckets_head`, and `processors_buckets_tail` should have enough memory allocated.
  */
-static void partition_buckets(const size_t *gh, const size_t *gt, byte max, uint16_t threads_num,
+static void partition_buckets(const size_t *gh, const size_t *gt, byte max, size_t threads_num,
                               size_t processors_buckets_head[threads_num][max + 1],
                               size_t processors_buckets_tail[threads_num][max + 1]) {
 
     // Iterate over threads for partitioning
-    for (uint16_t tid = 0; tid < threads_num; tid++) {
+    for (size_t tid = 0; tid < threads_num; tid++) {
 #pragma omp task default(none) firstprivate(tid, max, threads_num, gh, gt) shared(processors_buckets_head, processors_buckets_tail)
         {
             // Check if the thread id is the last one
@@ -67,15 +67,15 @@ static void partition_buckets(const size_t *gh, const size_t *gt, byte max, uint
  *
  * @note `processors_buckets_head`, and `processors_buckets_tail` should have enough memory allocated.
  */
-static void permute(uint64_t *array, byte max, uint8_t level, uint16_t threads_num,
+static void permute(T *array, byte max, uint8_t level, uint16_t threads_num,
                     size_t processors_buckets_head[threads_num][max + 1],
                     size_t processors_buckets_tail[threads_num][max + 1]) {
 
 
-    for (int tid = 0; tid < threads_num; tid++) {
+    for (uint16_t tid = 0; tid < threads_num; tid++) {
 #pragma omp task  default(none) firstprivate(tid, max, level, threads_num) shared(processors_buckets_head, processors_buckets_tail, array)
         {
-            uint64_t temp;
+            T temp;
             byte temp_b;
             for (size_t i = 0; i < max + 1; i++) {
                 size_t head = processors_buckets_head[tid][i];
@@ -124,7 +124,7 @@ static void permute(uint64_t *array, byte max, uint8_t level, uint16_t threads_n
  *
  * @note The arrays `gh`, `gt`, `processors_buckets_head`, and `processors_buckets_tail` should have enough memory allocated.
  */
-static void repair(uint64_t *array, size_t *gh, const size_t *gt, byte max, uint8_t level, uint16_t threads_num,
+static void repair(T *array, size_t *gh, const size_t *gt, byte max, uint8_t level, uint16_t threads_num,
                    size_t processors_buckets_head[threads_num][max + 1],
                    size_t processors_buckets_tail[threads_num][max + 1]) {
 
@@ -136,12 +136,12 @@ static void repair(uint64_t *array, size_t *gh, const size_t *gt, byte max, uint
             for (int tid = 0; tid < threads_num; tid++) {
                 size_t head = processors_buckets_head[tid][i];
                 while (head < processors_buckets_tail[tid][i] && head < tail) {
-                    uint64_t temp = array[head];
+                    T temp = array[head];
                     byte temp_b = get_byte_at(temp, level);
                     if (temp_b != (byte) i) {
                         while (head < tail) {
                             tail--;
-                            uint64_t w = array[tail];
+                            T w = array[tail];
                             byte w_b = get_byte_at(w, level);
                             if (w_b == (byte) i) {
                                 array[head] = w;
@@ -173,7 +173,7 @@ static void repair(uint64_t *array, size_t *gh, const size_t *gt, byte max, uint
  * @param level Byte level used for sorting.
  * @param threads_num Number of threads for parallel processing.
  */
-void mrpip_step(uint64_t *array, size_t start, size_t end, uint8_t level, uint8_t threads_num) {
+void mrpip_step(T *array, size_t start, size_t end, uint8_t level, uint16_t threads_num) {
 
 
     // if size is less than RSORT_GROUP_MIN_DIST, use sequential sorting
@@ -225,7 +225,7 @@ void mrpip_step(uint64_t *array, size_t start, size_t end, uint8_t level, uint8_
 }
 
 
-void msb_radix_sort_parallel_in_place(uint64_t *array, size_t size, uint8_t level) {
+void msb_radix_sort_parallel_in_place(T *array, size_t size, uint8_t level) {
 #pragma omp parallel default(none) shared(array, size, level, RUNNER_THREADS_NUM)
     {
 #pragma omp single

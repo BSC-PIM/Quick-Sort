@@ -7,17 +7,18 @@
 #include <string.h>
 #include <omp.h>
 
+#include "config.h"
 #include "utils.h"
 #include "radixsort_common.h"
 #include "msb_radix_sequential_in_place.h"
 
-extern uint8_t RUNNER_THREADS_NUM;
+extern uint16_t RUNNER_THREADS_NUM;
 
 extern size_t RSORT_GROUP_MIN_DIST;
 
 extern size_t RSORT_MAX_BYTE_THRESHOLD;
 
 
-void msb_radix_sort_parallel_in_place(uint64_t *array, size_t size, uint8_t level);
+void msb_radix_sort_parallel_in_place(T *array, size_t size, uint8_t level);
 
 #endif

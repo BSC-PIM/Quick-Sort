@@ -1,12 +1,6 @@
-//
-// Created by halfblood on 8/8/23.
-//
-
 #include <malloc.h>
 #include <assert.h>
 #include "work_queue.h"
-
-int WQ_THREAD_NUM = 1;
 
 
 void work_queue_init(work_queue_t *queue) {

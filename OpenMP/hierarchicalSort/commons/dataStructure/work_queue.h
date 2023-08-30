@@ -7,8 +7,6 @@
 #include "stdint.h"
 #include "pthread.h"
 
-extern int WQ_THREAD_NUM;
-
 
 /// @brief work_queue_item_t is a struct which contains 
 typedef struct work_queue_item {
@@ -24,7 +22,9 @@ typedef struct work_queue {
     pthread_mutex_t lock;
     pthread_cond_t cond;
     size_t total_pop;
-    _Atomic size_t total_processed;
+    _Atomic size_t
+    total_processed;
+
     bool terminate;
 } work_queue_t;
 
@@ -42,7 +42,7 @@ void work_queue_push(work_queue_t *queue, void *job);
 /// @note this function is thread safe
 /// @param queue is a pointer to work_queue_t
 /// @return pointer to job_t
-void * work_queue_pop(work_queue_t *queue);
+void *work_queue_pop(work_queue_t *queue);
 
 /// @brief work_queue_destroy is a function which destroys work_queue_t
 /// @param queue is a pointer to work_queue_t

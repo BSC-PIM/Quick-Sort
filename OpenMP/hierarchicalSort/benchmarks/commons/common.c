@@ -13,7 +13,7 @@
  *
  * @note The array should have at least `size` elements.
  */
-bool verify(const uint64_t *arr, size_t size) {
+bool verify(const T *arr, size_t size) {
     for (int i = 0; i < size - 1; i++) { ;
         if (arr[i] > arr[i + 1]) {
             return false;
@@ -44,7 +44,7 @@ bool verify(const uint64_t *arr, size_t size) {
  */
 
 void
-qsort_bench_function(qsort_bench_func qsort, uint64_t *arr, size_t size, size_t test_count, setup_func setup,
+qsort_bench_function(qsort_bench_func qsort, T *arr, size_t size, size_t test_count, setup_func setup,
                      verify_func verify) {
     double start, end, avg = 0;
     for (int i = 0; i < test_count; i++) {
@@ -65,7 +65,7 @@ qsort_bench_function(qsort_bench_func qsort, uint64_t *arr, size_t size, size_t 
 }
 
 
-void rsort_bench_function(rsort_bench_func rsort, uint64_t *arr, size_t size, uint8_t level, size_t test_count,
+void rsort_bench_function(rsort_bench_func rsort, T *arr, size_t size, uint8_t level, size_t test_count,
                      setup_func setup, verify_func verify) {
     double start, end, avg = 0;
     for (int i = 0; i < test_count; i++) {

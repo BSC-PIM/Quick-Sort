@@ -1,9 +1,9 @@
 #include "partition_and_merge.h"
 
 
-void init_props(host_t *host, uint64_t *workload, size_t workload_size, sort_props_t *s1, double *sort_timer);
+void init_props(host_t *host, T *workload, size_t workload_size, sort_props_t *s1, double *sort_timer);
 
-void merge(const host_t *host, uint64_t *output, size_t workload_size, const sort_props_t *s1, size_t **ptrs,
+void merge(const host_t *host, T *output, size_t workload_size, const sort_props_t *s1, T **ptrs,
            size_t sorted_index);
 
 void worker_psort_and_tick(worker_t self, sort_props_t props) {
@@ -53,7 +53,7 @@ void partition_and_merge(host_t *host, T *workload, T *output, size_t workload_s
     }
 
     // set pointer on each partition
-    size_t *ptrs[host->worker_count];
+    T *ptrs[host->worker_count];
     for (int i = 0; i < host->worker_count; i++) {
         ptrs[i] = s1[i].input;
     }
@@ -69,10 +69,10 @@ void partition_and_merge(host_t *host, T *workload, T *output, size_t workload_s
     host->timer[1] = max_worker_time;
 }
 
-void merge(const host_t *host, uint64_t *output, size_t workload_size, const sort_props_t *s1, size_t **ptrs,
+void merge(const host_t *host, T *output, size_t workload_size, const sort_props_t *s1, T **ptrs,
            size_t sorted_index) {
     while (sorted_index != workload_size) {
-        T current_min = UINT64_MAX;
+        T current_min = T_MAX;
         size_t ptr_index = 0;
         for (int m = 0; m < host->worker_count; m++) {
             if (ptrs[m] != NULL) {
@@ -88,6 +88,9 @@ void merge(const host_t *host, uint64_t *output, size_t workload_size, const sor
 
         if (ptrs[ptr_index] != NULL) {
             ptrs[ptr_index]++;
+
+            if (ptrs[ptr_index] > (s1[ptr_index].input + s1[ptr_index].partition_size)  )
+
             if (ptrs[ptr_index] - s1[ptr_index].input == s1[ptr_index].partition_size) {
                 ptrs[ptr_index] = NULL;
             }
@@ -96,7 +99,7 @@ void merge(const host_t *host, uint64_t *output, size_t workload_size, const sor
 }
 
 
-void init_props(host_t *host, uint64_t *workload, size_t workload_size, sort_props_t *s1, double *sort_timer) {
+void init_props(host_t *host, T *workload, size_t workload_size, sort_props_t *s1, double *sort_timer) {
     T division_value = workload_size / host->worker_count;
     T reminder = workload_size % host->worker_count;
     for (size_t i = 0; i < host->worker_count; i++) {

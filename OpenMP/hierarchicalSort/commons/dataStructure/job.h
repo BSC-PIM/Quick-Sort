@@ -8,8 +8,8 @@
 #include <stdint.h>
 
 typedef struct job{
-    uint64_t start;
-    uint64_t end;
+    size_t start;
+    size_t end;
 } job_t;
 
 #endif //MERGEIDEA_JOB_H
