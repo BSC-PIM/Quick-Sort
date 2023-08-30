@@ -96,11 +96,11 @@ int main(int argc, char *argv[]) {
     bool (*verify)(uint64_t *, size_t) = &verify_wrapper;
 
     // benchmark the quicksort baseline model (sequential)
-    qsort_bench_function(quicksort_baseline, array, array_size, TEST_COUNT, HOARE, setup, verify);
+    qsort_bench_function(quicksort_baseline, array, array_size, TEST_COUNT, setup, verify);
 
     // benchmark the quicksort task parallelism model
-    qsort_bench_function(quicksort_task_parallelism, array, array_size, TEST_COUNT, HOARE, setup, verify);
+    qsort_bench_function(quicksort_task_parallelism, array, array_size, TEST_COUNT, setup, verify);
 
     // benchmark the quicksort threadpool model
-    qsort_bench_function(quicksort_threadpool_parallelism, array, array_size, TEST_COUNT, HOARE, setup, verify);
+    qsort_bench_function(quicksort_threadpool_parallelism, array, array_size, TEST_COUNT, setup, verify);
 }

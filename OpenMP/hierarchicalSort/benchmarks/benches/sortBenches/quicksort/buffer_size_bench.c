@@ -16,7 +16,6 @@ bool verify_wrapper(uint64_t *arr, size_t size) {
 }
 
 int main(int argc, char *argv[]) {
-    size_t array_size = 10;
     int threads = 6;
 
 
@@ -27,11 +26,12 @@ int main(int argc, char *argv[]) {
     bool (*verify)(uint64_t *, size_t) = &verify_wrapper;
     void (*setup)(uint64_t *, size_t) = &populate_wrapper;
 
-
+    size_t array_size = 2;
     for (int i = 0; i < 16; i++) {
         array_size = array_size << 1;
-        uint64_t array[array_size];
-        qsort_bench_function(quicksort_task_parallelism, array, array_size, TEST_COUNT, HOARE, setup, verify);
+        uint64_t *array = malloc(sizeof(uint64_t) * array_size);
+        qsort_bench_function(quicksort_task_parallelism, array, array_size, TEST_COUNT, setup, verify);
+        free(array);
     }
 
 
