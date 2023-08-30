@@ -13,8 +13,8 @@
 
 extern size_t QSORT_GROUP_MIN_DIST;
 
-void quicksort_task_parallelism(uint64_t *array, size_t size, partition_method_t method);
+void quicksort_task_parallelism(uint64_t *array, size_t size);
 
-void quicksort_threadpool_parallelism(uint64_t *array, size_t size, partition_method_t method);
+void quicksort_threadpool_parallelism(uint64_t *array, size_t size);
 
 #endif
