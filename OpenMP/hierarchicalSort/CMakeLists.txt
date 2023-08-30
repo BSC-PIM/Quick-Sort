@@ -20,6 +20,14 @@ add_executable(DpuLevel main.c
         commons/quicksort_common.h
         commons/radixsort_common.c
         commons/radixsort_common.h
+        sorts/radix/lsb_radix_sequential_extra_space.c
+        sorts/radix/lsb_radix_sequential_extra_space.h
+        sorts/radix/lsb_radix_sequential_extra_space.c
+        dataDistribution/merge/partition_and_merge.c
+        dataDistribution/merge/partition_and_merge.h
+        dataDistribution/worker.h
+        dataDistribution/host.h
+        dataDistribution/sort_prop.h
 )
 
 
@@ -123,6 +131,11 @@ add_executable(merge_partition_bench benchmarks/benches/distributionBenches/merg
         commons/dataStructure/work_queue.c
         sorts/quicksort/quicksort_mt.c
         sorts/quicksort/quicksort_mt.h
+        dataDistribution/worker.h
+        dataDistribution/host.h
+        dataDistribution/sort_prop.h
+        dataDistribution/merge/partition_and_merge.c
+        dataDistribution/merge/partition_and_merge.h
         utils/utils.h
         commons/quicksort_common.c
         commons/quicksort_common.h
@@ -140,4 +153,4 @@ target_include_directories(threads_num_bench_rsort PRIVATE "./" "benchmarks/comm
 target_include_directories(min_chunk_size_bench_rsort PRIVATE "./" "benchmarks/commons" "./sorts/radix")
 target_include_directories(buffer_size_bench_rsort PRIVATE "./" "benchmarks/commons" "./sorts/radix")
 
-target_include_directories(merge_partition_bench PRIVATE "./" "benchmarks/commons" "./sorts/quicksort")
+target_include_directories(merge_partition_bench PRIVATE "./" "benchmarks/commons" "./sorts/quicksort" "./dataDistribution")
