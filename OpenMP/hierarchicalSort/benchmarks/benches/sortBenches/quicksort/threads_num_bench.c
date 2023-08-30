@@ -17,22 +17,21 @@
  *
  * @param arr Pointer to the array to be sorted.
  * @param size Size of the array.
- * @param method The partition method used by the quicksort algorithm.
  */
-void quicksort_baseline(uint64_t *arr, size_t size, partition_method_t method) {
-    quicksort_rec_seq(arr, 0, size - 1, method);
+void quicksort_baseline(uint64_t *arr, size_t size) {
+    quicksort_rec_seq(arr, 0, size - 1, HOARE);
 }
 
 /**
  * @brief Populate an array with a specified value.
  *
- * This function populates an array with a given value up to the specified size.
+ * This function populates an array with a given value up to the specified partition_size.
  * The array is populated with the value specified by the maximum value of the data type `uint64_t`.
  *
  * @param arr Pointer to the array to be populated.
  * @param size Size of the array.
  *
- * @note The array should have enough memory allocated to accommodate the specified size.
+ * @note The array should have enough memory allocated to accommodate the specified partition_size.
  * @warning Using this function with large sizes might lead to performance issues.
  */
 void populate_wrapper(uint64_t *arr, size_t size) {
@@ -60,7 +59,7 @@ int main(int argc, char *argv[]) {
     // Define the flags
     struct Flag flags[] = {
             {.name = "threads", .has_arg=required_argument, .val='t', .save=&threads, .type = INT16_T},
-            {.name = "array-size", .has_arg=required_argument, .val='a', .save=&array_size, .type= INT64_T},
+            {.name = "array-partition-size", .has_arg=required_argument, .val='a', .save=&array_size, .type= INT64_T},
     };
 
 
@@ -69,9 +68,9 @@ int main(int argc, char *argv[]) {
                         "  This program demonstrates different threads number and method effects on sorting.\n\n"
                         "Options:\n"
                         "--threads NUM                         Number of threads to use\n"
-                        "--array-size NUM                      Size of the array\n"
+                        "--array-partition_size NUM                      Size of the array\n"
                         "Usage Examples:\n"
-                        "  program_name --threads 4 --array-size 100   # Run with 4 threads and array size 100\n";
+                        "  program_name --threads 4 --array-partition_size 100   # Run with 4 threads and array partition_size 100\n";
 
 
     // Parse the flags
