@@ -69,10 +69,6 @@ int main(int argc, char *argv[]) {
     QSORT_GROUP_MIN_DIST = group_min_dist;
 
 
-    // create a pointer function which is used for setup (get array pointer and array size then call POPULATE_ARR on it)
-    void (*setup)(uint64_t *, size_t) = &populate_wrapper;
-    bool (*verify)(uint64_t *, size_t) = &verify_wrapper;
-
-    qsort_bench_function(quicksort_task_parallelism, array, array_size, TEST_COUNT, HOARE, setup, verify);
+    qsort_bench_function(quicksort_task_parallelism, array, array_size, TEST_COUNT, &populate_wrapper, &verify_wrapper);
 
 }
