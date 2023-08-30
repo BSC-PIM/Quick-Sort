@@ -36,21 +36,21 @@ bool verify(const uint64_t *arr, size_t size) {
  * @param arr Pointer to the array used for benchmarking.
  * @param size Size of the array.
  * @param test_count Number of times to benchmark the function.
- * @param method The partition method used by the benchmarked function.
  * @param setup The setup function to prepare the array before each benchmark.
  * @param verify The verification function to validate the results after each benchmark.
  *
  * @note The array should have at least `size` elements.
  * @warning Make sure the setup and verification functions work correctly with the benchmarked function.
  */
+
 void
-qsort_bench_function(qsort_bench_func qsort, uint64_t *arr, size_t size, size_t test_count, partition_method_t method,
-                     setup_func setup, verify_func verify) {
+qsort_bench_function(qsort_bench_func qsort, uint64_t *arr, size_t size, size_t test_count, setup_func setup,
+                     verify_func verify) {
     double start, end, avg = 0;
     for (int i = 0; i < test_count; i++) {
         setup(arr, size); // Call the setup function before benchmarking
         start = omp_get_wtime();
-        qsort(arr, size, method);
+        qsort(arr, size);
         end = omp_get_wtime();
         avg += (end - start);
         bool verified = verify(arr, size); // Call the verification function
@@ -65,8 +65,7 @@ qsort_bench_function(qsort_bench_func qsort, uint64_t *arr, size_t size, size_t 
 }
 
 
-void
-rsort_bench_function(rsort_bench_func rsort, uint64_t *arr, size_t size, uint8_t level, size_t test_count,
+void rsort_bench_function(rsort_bench_func rsort, uint64_t *arr, size_t size, uint8_t level, size_t test_count,
                      setup_func setup, verify_func verify) {
     double start, end, avg = 0;
     for (int i = 0; i < test_count; i++) {

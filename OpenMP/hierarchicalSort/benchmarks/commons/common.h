@@ -20,13 +20,15 @@ typedef void (*setup_func)(uint64_t *arr, size_t size);
 
 typedef bool (*verify_func)(uint64_t *arr, size_t size);
 
-typedef void (qsort_bench_func)(uint64_t *, size_t size, partition_method_t method);
+typedef void (qsort_bench_func)(uint64_t *, size_t size);
 
 typedef void (rsort_bench_func)(uint64_t *, size_t size, uint8_t level);
 
+
+
 void
-qsort_bench_function(qsort_bench_func qsort, uint64_t *arr, size_t size, size_t test_count, partition_method_t method,
-                     setup_func setup, verify_func verify);
+qsort_bench_function(qsort_bench_func qsort, uint64_t *arr, size_t size, size_t test_count, setup_func setup,
+                     verify_func verify);
 
 void
 rsort_bench_function(rsort_bench_func rsort, uint64_t *arr, size_t size, uint8_t level, size_t test_count,
