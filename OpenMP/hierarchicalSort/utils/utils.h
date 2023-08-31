@@ -65,4 +65,6 @@
         b = tmp; \
     } while(0)
 
+#define CEILING(x, y) (((x) + (y) - 1) / (y))
+
 #endif //MERGEIDEA_UTILS_H
