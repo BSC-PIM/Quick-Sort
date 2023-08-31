@@ -14,7 +14,7 @@ typedef struct sort_props {
     sort_memory_type_t type;
     T *input;
     T *output;
-    size_t partition_size;
+    size_t element_in_partition;
     double *timer; //time_to_sort
 } sort_props_t;
 
