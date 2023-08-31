@@ -30,7 +30,7 @@ void quicksort_task_parallelism(T *array, size_t size) {
  * \brief Performs recursive task-based quicksort on a subarray.
  *
  * This function performs recursive task-based quicksort on a subarray of the original array.
- * If the subarray partition_size is smaller than a certain threshold, sequential quicksort is performed instead.
+ * If the subarray element_in_partition is smaller than a certain threshold, sequential quicksort is performed instead.
  * Otherwise, the subarray is divided into two parts using the Hoare partition scheme, and sorting tasks are created
  * for each part. The tasks are then executed by multiple threads in a parallel region.
  *
@@ -87,7 +87,7 @@ void quicksort_threadpool_parallelism(T *array, size_t size) {
  * \param method The partition method to be used by the `partition` function.
  */
 void thread_pool_serve(work_queue_t *wq, T *array, partition_method_t method) {
-    job_t *job;
+    sort_job_t *job;
     while ((job = work_queue_pop(wq)) != NULL) {
 
         if (job->start >= job->end) {
@@ -105,13 +105,13 @@ void thread_pool_serve(work_queue_t *wq, T *array, partition_method_t method) {
         size_t pivot = partition(array, job->start, job->end, method);
 
 
-        job_t *left, *right;
-        left = malloc(sizeof(job_t));
+        sort_job_t *left, *right;
+        left = malloc(sizeof(sort_job_t));
         left->start = job->start;
         left->end = pivot - 1;
         work_queue_push(wq, left);
 
-        right = malloc(sizeof(job_t));
+        right = malloc(sizeof(sort_job_t));
         right->start = pivot;
         right->end = job->end;
         work_queue_push(wq, right);
@@ -122,27 +122,27 @@ void thread_pool_serve(work_queue_t *wq, T *array, partition_method_t method) {
 }
 
 /**
- * \brief Initializes the work queue and prepares the first job for processing.
+ * \brief Initializes the work queue and prepares the first sort_job for processing.
  *
- * The <b>prepare_queue</b> function initializes the work queue and prepares the first job to be processed. It sets up the
+ * The <b>prepare_queue</b> function initializes the work queue and prepares the first sort_job to be processed. It sets up the
  * work queue with the specified thread count and allocates memory for the work queue structure. It also creates the initial
- * job, which represents the entire range of elements to be processed.
+ * sort_job, which represents the entire range of elements to be processed.
  *
  * \param size The size of the array.
  * \param wq A pointer to the pointer of the work queue.
  *
- * \note The work queue and the initial job are modified and allocated within this function.
+ * \note The work queue and the initial sort_job are modified and allocated within this function.
  */
 void prepare_queue(size_t size, work_queue_t **wq) {
     // Initialize the work queue
     *wq = malloc(sizeof(work_queue_t));
     work_queue_init(*wq);
 
-    // Prepare the first job
-    job_t *job = malloc(sizeof(job_t));
+    // Prepare the first sort_job
+    sort_job_t *job = malloc(sizeof(sort_job_t));
     job->start = 0;
     job->end = size - 1;
 
-    // Push the first job to the work queue
+    // Push the first sort_job to the work queue
     work_queue_push(*wq, job);
 }
