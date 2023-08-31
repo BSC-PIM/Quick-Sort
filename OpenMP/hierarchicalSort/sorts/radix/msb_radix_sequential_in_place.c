@@ -27,7 +27,7 @@ void mrssip_step(T *array, size_t start, size_t end, uint8_t level) { // NOLINT(
     sort_and_swap(array, level, max, gh, gt);
 
     // Recursively perform the next step for the remaining byte levels
-    if (level < sizeof(array) - 1) {
+    if (level < sizeof(H) - 1) {
         for (uint16_t i = 0; i < max + 1; i++) {
             mrssip_step(array, gt[i] - cnt[i], gt[i], level + 1);
         }

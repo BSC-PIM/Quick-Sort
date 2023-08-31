@@ -29,6 +29,14 @@ inline byte get_byte_at(T number, int at) {
 }
 
 
+inline H get_h_at(T number) {
+//    if (sizeof(T) < sizeof(H)) {
+//        fprintf(stderr, "Invalid byte position\n");
+//        exit(EXIT_FAILURE);
+//    }
+    return (number >> ((sizeof(T) - sizeof(H)) * 8));
+}
+
 /**
  * @brief Create histograms from a portion of an array.
  *
@@ -52,7 +60,7 @@ inline byte create_histograms(uint16_t buckets_n, size_t *cnt, T *array, size_t 
     byte max = 0; // fix max data type
 
     // OpenMP parallel for loop to process array elements and construct histograms
- #pragma omp parallel for if(is_parallel) default(none) firstprivate(buckets_n, start, end, level) reduction(max:max) reduction(+:cnt[:buckets_n]) schedule(static) shared(array)
+#pragma omp parallel for if(is_parallel) default(none) firstprivate(buckets_n, start, end, level) reduction(max:max) reduction(+:cnt[:buckets_n]) schedule(static) shared(array)
     for (size_t i = start; i < end; i++) {
         byte ba = get_byte_at(array[i], level);
         if (ba > max) max = ba;

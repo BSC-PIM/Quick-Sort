@@ -1,7 +1,7 @@
 #include "msb_radix_parallel_in_place.h"
 
 
-uint16_t RUNNER_THREADS_NUM = 6;
+extern uint16_t RUNNER_THREADS_NUM = 6;
 
 extern size_t RSORT_GROUP_MIN_DIST = 128;
 
@@ -210,7 +210,7 @@ void mrpip_step(T *array, size_t start, size_t end, uint8_t level, uint16_t thre
         if (is_finished) break;
     }
 
-    if (level < sizeof(array) - 1) {
+    if (level < sizeof(H) - 1) {
         for (int i = 0; i < max + 1; i++) {
             size_t s = gt[i] - cnt[i];
             size_t e = gt[i];
