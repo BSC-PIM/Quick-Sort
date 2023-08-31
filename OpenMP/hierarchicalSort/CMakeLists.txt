@@ -3,7 +3,7 @@ project(DpuLevel C)
 
 set(CMAKE_C_STANDARD 99)
 
-set(CMAKE_C_FLAGS "-fopenmp")
+set(CMAKE_C_FLAGS "-fopenmp -O3")
 
 
 # PLAYGROUND EXECUTABLE
@@ -15,12 +15,11 @@ add_executable(DpuLevel main.c
         sorts/quicksort/quicksort_mt.h
         sorts/radix/msb_radix_parallel_in_place.c
         sorts/radix/msb_radix_sequential_in_place.c
+        sorts/radix/lsb_radix_sequential_extra_space.c
+        sorts/radix/lsb_radix_sequential_extra_space.h
         utils/utils.h
         commons/quicksort_common.c
         commons/quicksort_common.h
-        sorts/radix/lsb_radix_sequential_extra_space.c
-        sorts/radix/lsb_radix_sequential_extra_space.h
-        sorts/radix/lsb_radix_sequential_extra_space.c
         dataDistribution/merge/partition_and_merge.c
         dataDistribution/merge/partition_and_merge.h
         dataDistribution/worker.h
@@ -135,6 +134,9 @@ add_executable(merge_partition_bench benchmarks/benches/distributionBenches/merg
         commons/dataStructure/work_queue.c
         sorts/quicksort/quicksort_mt.c
         sorts/quicksort/quicksort_mt.h
+        sorts/radix/lsb_radix_sequential_extra_space.c
+        sorts/radix/lsb_radix_sequential_extra_space.h
+        sorts/
         dataDistribution/worker.h
         dataDistribution/host.h
         dataDistribution/sort_prop.h
@@ -143,6 +145,34 @@ add_executable(merge_partition_bench benchmarks/benches/distributionBenches/merg
         utils/utils.h
         commons/quicksort_common.c
         commons/quicksort_common.h
+        commons/radixsort_common.c
+        commons/radixsort_common.h
+        ../../libs/Flag-Parser/flag_parser.c
+)
+
+#________________________________ Radix Idea ______________________________#
+add_executable(two_step_sort_bench benchmarks/benches/distributionBenches/two_step_sort_bench.c
+        benchmarks/commons/common.c
+        benchmarks/commons/common.h
+        commons/dataStructure/work_queue.h
+        commons/dataStructure/job.h
+        commons/dataStructure/work_queue.c
+        sorts/quicksort/quicksort_mt.c
+        sorts/quicksort/quicksort_mt.h
+        sorts/radix/msb_radix_parallel_in_place.c
+        sorts/radix/msb_radix_sequential_in_place.c
+        sorts/radix/lsb_radix_sequential_extra_space.c
+        sorts/radix/lsb_radix_sequential_extra_space.h
+        dataDistribution/worker.h
+        dataDistribution/host.h
+        dataDistribution/sort_prop.h
+        dataDistribution/radix/two_step_sort.c
+        dataDistribution/radix/two_step_sort.h
+        utils/utils.h
+        commons/quicksort_common.c
+        commons/quicksort_common.h
+        commons/radixsort_common.h
+        commons/radixsort_common.c
         ../../libs/Flag-Parser/flag_parser.c
 )
 
@@ -158,3 +188,4 @@ target_include_directories(min_chunk_size_bench_rsort PRIVATE "./" "benchmarks/c
 target_include_directories(buffer_size_bench_rsort PRIVATE "./" "benchmarks/commons" "./sorts/radix")
 
 target_include_directories(merge_partition_bench PRIVATE "./" "benchmarks/commons" "./sorts/quicksort" "./dataDistribution")
+target_include_directories(two_step_sort_bench PRIVATE "./" "benchmarks/commons" "./sorts/quicksort" "./dataDistribution")
