@@ -9,9 +9,9 @@
         typeof(__VA_ARGS__) max; \
         do { \
             max = values[0]; \
-            for (int i = 1; i < num_values; ++i) { \
-                if (values[i] > max) { \
-                    max = values[i]; \
+            for (int max_itr = 1; max_itr < num_values; ++max_itr) { \
+                if (values[max_itr] > max) { \
+                    max = values[max_itr]; \
                 } \
             } \
         } while (0); \
@@ -25,9 +25,9 @@
         typeof(__VA_ARGS__) min; \
         do { \
             min = values[0]; \
-            for (int i = 1; i < num_values; ++i) { \
-                if (values[i] < min) { \
-                    min = values[i]; \
+            for (int min_itr = 1; min_itr < num_values; ++min_itr) { \
+                if (values[min_itr] < min) { \
+                    min = values[min_itr]; \
                 } \
             } \
         } while (0); \
