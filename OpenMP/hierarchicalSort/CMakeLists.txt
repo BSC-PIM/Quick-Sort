@@ -3,7 +3,7 @@ project(DpuLevel C)
 
 set(CMAKE_C_STANDARD 99)
 
-set(CMAKE_C_FLAGS "-fopenmp -O3")
+set(CMAKE_C_FLAGS "-fopenmp")
 
 
 # PLAYGROUND EXECUTABLE
@@ -18,8 +18,6 @@ add_executable(DpuLevel main.c
         utils/utils.h
         commons/quicksort_common.c
         commons/quicksort_common.h
-        commons/radixsort_common.c
-        commons/radixsort_common.h
         sorts/radix/lsb_radix_sequential_extra_space.c
         sorts/radix/lsb_radix_sequential_extra_space.h
         sorts/radix/lsb_radix_sequential_extra_space.c
@@ -29,6 +27,11 @@ add_executable(DpuLevel main.c
         dataDistribution/host.h
         dataDistribution/sort_prop.h
         config.h
+        dataDistribution/radix/two_step_sort.c
+        dataDistribution/radix/two_step_sort.h
+        commons/radixsort_common.c
+        commons/radixsort_common.h
+        dataDistribution/distribution_common.h
 )
 
 
