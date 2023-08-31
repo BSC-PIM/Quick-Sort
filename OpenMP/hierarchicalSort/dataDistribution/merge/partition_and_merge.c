@@ -3,26 +3,21 @@
 
 void init_props(host_t *host, T *workload, size_t workload_size, sort_props_t *s1, double *sort_timer);
 
-void merge(const host_t *host, T *output, size_t workload_size, const sort_props_t *s1, T **ptrs,
-           size_t sorted_index);
-
-void worker_psort_and_tick(worker_t self, sort_props_t props) {
-    // check if the worker buffer partition_size is enough for the workload
-    if (self.mem_size < props.partition_size) {
-        fprintf(stderr, "ERROR: WORKER %zu WORKLOAD LARGER THAN WORKER SIZE", self.me);
-        exit(1);
-    }
-
-    // start timer
-    double start, end;
-    start = omp_get_wtime();
-    quicksort_threadpool_parallelism(props.input, props.partition_size);
-    end = omp_get_wtime();
-    *(props.timer) = end - start;
-    *(self.w_timer) += *(props.timer);
-}
+void merge(const host_t *host, T *output, size_t workload_size, const sort_props_t *s1, T **ptrs);
 
 
+/**
+ * @brief Perform parallel partition sorting and sequential merging of workloads.
+ *
+ * This function performs parallel partition sorting and sequential merging of workloads using workers.
+ * It checks if the host has enough memory and available threads, initializes workers, creates initial workloads,
+ * performs parallel partition sorting, sets pointers for merging, and sequentially merges the sorted sub-arrays into the output array.
+ *
+ * @param host Pointer to the host structure containing host information.
+ * @param workload Pointer to the input workload array.
+ * @param output Pointer to the output array for storing the merged sorted elements.
+ * @param workload_size Size of the workload and output arrays.
+ */
 void partition_and_merge(host_t *host, T *workload, T *output, size_t workload_size) {
     // check if host has enough memory
     if (host->host_mem_size < workload_size * sizeof(T)) {
@@ -47,34 +42,45 @@ void partition_and_merge(host_t *host, T *workload, T *output, size_t workload_s
 
     // parallel partition sorting
     double max_worker_time = 0;
-    for (int j = 0; j < host->worker_count; j++) {
+    for (uint16_t j = 0; j < host->worker_count; j++) {
         workers[j].sort_and_tick(workers[j], s1[j]);
         max_worker_time = MAX(max_worker_time, sort_timer[j]);
     }
 
     // set pointer on each partition
     T *ptrs[host->worker_count];
-    for (int i = 0; i < host->worker_count; i++) {
+    for (uint16_t i = 0; i < host->worker_count; i++) {
         ptrs[i] = s1[i].input;
     }
 
     double start, end;
     start = omp_get_wtime();
-    size_t sorted_index = 0;
-    // merge all the elements
-    merge(host, output, workload_size, s1, ptrs, sorted_index);
-
+    merge(host, output, workload_size, s1, ptrs);
     end = omp_get_wtime();
+
     host->timer[0] = end - start;
     host->timer[1] = max_worker_time;
 }
 
-void merge(const host_t *host, T *output, size_t workload_size, const sort_props_t *s1, T **ptrs,
-           size_t sorted_index) {
+
+/**
+ * @brief Merge sorted sub-arrays into a single sorted output array.
+ *
+ * This function merges the sorted sub-arrays from individual workers into a single sorted output array.
+ * It iterates through the sub-arrays and selects the smallest element at each step to populate the output array.
+ *
+ * @param host Pointer to the host structure containing worker count information.
+ * @param output Pointer to the output array for storing the merged sorted elements.
+ * @param workload_size Size of the workload and output arrays.
+ * @param s1 Pointer to an array of sort_props_t structures containing sorting properties for each worker.
+ * @param ptrs Pointer to an array of pointers to the current positions in the sub-arrays.
+ */
+void merge(const host_t *host, T *output, size_t workload_size, const sort_props_t *s1, T **ptrs) {
+    size_t sorted_index = 0;
     while (sorted_index != workload_size) {
         T current_min = T_MAX;
         size_t ptr_index = 0;
-        for (int m = 0; m < host->worker_count; m++) {
+        for (uint16_t m = 0; m < host->worker_count; m++) {
             if (ptrs[m] != NULL) {
                 T num = *(ptrs[m]);
                 if (num < current_min) {
@@ -89,26 +95,43 @@ void merge(const host_t *host, T *output, size_t workload_size, const sort_props
         if (ptrs[ptr_index] != NULL) {
             ptrs[ptr_index]++;
 
-            if (ptrs[ptr_index] > (s1[ptr_index].input + s1[ptr_index].partition_size)  )
+            if (ptrs[ptr_index] > (s1[ptr_index].input + s1[ptr_index].element_in_partition))
 
-            if (ptrs[ptr_index] - s1[ptr_index].input == s1[ptr_index].partition_size) {
-                ptrs[ptr_index] = NULL;
-            }
+                if (ptrs[ptr_index] - s1[ptr_index].input == s1[ptr_index].element_in_partition) {
+                    ptrs[ptr_index] = NULL;
+                }
         }
     }
 }
 
 
+/**
+ * @brief Initialize sorting properties for parallel sorting.
+ *
+ * This function initializes sorting properties for parallel sorting using the provided workload
+ * and host information. It sets up sorting properties for each worker thread, specifying sorting type,
+ * partition size, input data, and output data.
+ *
+ * @param host Pointer to the host structure containing worker count information.
+ * @param workload Pointer to the input workload array.
+ * @param workload_size Size of the workload array.
+ * @param s1 Pointer to an array of sort_props_t structures for sorting properties.
+ * @param sort_timer Pointer to an array of timers for each worker thread.
+ *
+ * @note This function assumes that the total memory available for all worker threads combined is sufficient to accommodate the workloads.
+ */
 void init_props(host_t *host, T *workload, size_t workload_size, sort_props_t *s1, double *sort_timer) {
     T division_value = workload_size / host->worker_count;
     T reminder = workload_size % host->worker_count;
+
     for (size_t i = 0; i < host->worker_count; i++) {
         sort_props_t *props = &s1[i];
         props->timer = &sort_timer[i];
 
         props->type = IN_PLACE;
-        props->partition_size = division_value + (i < reminder ? 1 : 0);
+        props->element_in_partition = division_value + (i < reminder ? 1 : 0);
         props->input = &workload[i * division_value + (i < reminder ? i : reminder)];
         props->output = NULL;
     }
 }
+
