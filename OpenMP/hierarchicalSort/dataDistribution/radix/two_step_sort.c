@@ -4,6 +4,7 @@ uint16_t get_corresponding_worker_id(size_t index, size_t mem_size);
 
 
 void two_step_sort(host_t *host, T *workload, T *output, size_t workload_size) {
+
     // check if host has enough memory
     if (host->host_mem_size < workload_size * sizeof(T)) {
         fprintf(stderr, "Host does not have enough memory to run partition_and_merge\n");
@@ -16,6 +17,10 @@ void two_step_sort(host_t *host, T *workload, T *output, size_t workload_size) {
         exit(1);
     }
 
+    // restart timers
+    host->timer[0] = 0;
+    host->timer[1] = 0;
+
 
     // init workers
     worker_t *workers = malloc(sizeof(worker_t) * host->worker_count);
@@ -25,6 +30,8 @@ void two_step_sort(host_t *host, T *workload, T *output, size_t workload_size) {
     // set number of threads
     omp_set_num_threads(host->thread_count);
     RUNNER_THREADS_NUM = host->thread_count;
+    double start, end;
+    start = omp_get_wtime();
     msb_radix_sort_parallel_in_place(workload, workload_size, 0); // this will only sort the H most-significant bits
 
     size_t bucket_len = 1 << (sizeof(H) * 8);
@@ -52,18 +59,29 @@ void two_step_sort(host_t *host, T *workload, T *output, size_t workload_size) {
     size_t worker_mem_size_elems = host->worker_mem_size / sizeof(T);
     for (size_t bucket_idx = 0; bucket_idx < bucket_len; bucket_idx++) {
         size_t elem_in_bucket = buckets[bucket_idx];
-
         buckets[bucket_idx] += bucket_idx == 0 ? 0 : buckets[bucket_idx - 1];
+        if (elem_in_bucket == 0) continue;
+
+        if (s1[cwp_id].element_in_partition == (worker_mem_size_elems)) {
+            cwp_id++;
+            s1[cwp_id].input = s1[cwp_id - 1].input + s1[cwp_id - 1].element_in_partition;
+            s1[cwp_id].timer = &sort_timer[cwp_id];
+            s1[cwp_id].element_in_partition = 0;
+            s1[cwp_id].type = IN_PLACE;
+            s1[cwp_id].output = NULL;
+        }
+
         uint16_t wp_id = get_corresponding_worker_id(buckets[bucket_idx], host->worker_mem_size);
 
         if (wp_id - 1 > cwp_id) {
             merge_job_t job;
             job.w_first = cwp_id;
             job.w_last = wp_id;
-            job.start = s1[cwp_id].element_in_partition;
+            job.start = bucket_idx == 0 ? 0 : buckets[bucket_idx - 1];
 
-            size_t remaining_current_bucket_len =
-                    elem_in_bucket - (worker_mem_size_elems - s1[cwp_id].element_in_partition);
+            size_t cwp_space = worker_mem_size_elems - s1[cwp_id].element_in_partition;
+
+            size_t remaining_current_bucket_len = elem_in_bucket - cwp_space;
             s1[cwp_id].element_in_partition = worker_mem_size_elems;
 
             for (uint16_t worker_idx = cwp_id + 1; worker_idx < wp_id; worker_idx++) {
@@ -77,41 +95,40 @@ void two_step_sort(host_t *host, T *workload, T *output, size_t workload_size) {
                 remaining_current_bucket_len -= s1[worker_idx].element_in_partition;
             }
 
-            job.end = s1[wp_id].element_in_partition;
+            job.end = buckets[bucket_idx];
             m1[mj_count] = job;
             mj_count++;
+            cwp_id = wp_id - 1;
         } else {
             s1[cwp_id].element_in_partition += elem_in_bucket;
         }
-        cwp_id = wp_id;
     }
+
+    end = omp_get_wtime();
+    host->timer[0] += end - start;
 
 
     // parallel partition sorting
     double max_worker_time = 0;
-    for (uint16_t i = 0; i < cwp_id; i++) {
+    for (uint16_t i = 0; i <= cwp_id; i++) {
         workers[i].sort_and_tick(workers[i], s1[i]);
         max_worker_time = MAX(max_worker_time, sort_timer[i]);
     }
-
-    // print the result
-    for (size_t i = 0; i < workload_size; i++) {
-        printf("%d ", workload[i]);
-    }
-    printf("\n");
+    printf("max worker time is equal to : %f\n", max_worker_time * 1000);
 
 
     // do the merge step based on the number of workers
     for (uint16_t i = 0; i < mj_count; i++) {
+        start = omp_get_wtime();
         merge_job_t job = m1[i];
-        size_t merge_size = job.end - job.start;
-        size_t sorted_index = 0;
+        size_t merge_size = job.end;
+        size_t sorted_index = job.start;
 
         uint16_t ptr_size = job.w_last - job.w_first;
-        T *ptrs[ptr_size];
-        ptrs[0] = s1[job.w_first].input + job.start;
+        T *ptrs[ptr_size - 1];
+        ptrs[0] = workload + job.start;
         for (uint16_t j = job.w_first + 1; j < job.w_last; j++) {
-            ptrs[j] = s1[j - job.w_first].input;
+            ptrs[j - job.w_first] = s1[j].input;
         }
 
         while (sorted_index != merge_size) {
@@ -132,16 +149,20 @@ void two_step_sort(host_t *host, T *workload, T *output, size_t workload_size) {
             if (ptrs[ptr_index] != NULL) {
                 ptrs[ptr_index]++;
 
-                if (ptrs[ptr_index] > (s1[ptr_index].input + s1[ptr_index].element_in_partition))
+                if (ptrs[ptr_index] ==
+                    (s1[job.w_first + ptr_index].input + s1[job.w_first + ptr_index].element_in_partition))
+                    ptrs[ptr_index] = NULL;
 
-                    if (ptrs[ptr_index] - s1[ptr_index].input == s1[ptr_index].element_in_partition) {
-                        ptrs[ptr_index] = NULL;
-                    }
             }
         }
+        end = omp_get_wtime();
+        host->timer[0] += end - start;
+
+        // copy the output to the workload
+        memcpy(workload + job.start, output + job.start, (job.end - job.start) * sizeof(T));
     }
 
-
+    host->timer[1] = max_worker_time;
 }
 
 
@@ -160,7 +181,7 @@ uint16_t get_corresponding_worker_id(size_t index, size_t mem_size) {
     size_t elements_per_worker = mem_size / sizeof(T);
 
     // Calculate the worker id based on the index and elements per worker
-    uint16_t worker_id = index / elements_per_worker;
+    uint16_t worker_id = CEILING(index, elements_per_worker);
 
     return worker_id;
 }
