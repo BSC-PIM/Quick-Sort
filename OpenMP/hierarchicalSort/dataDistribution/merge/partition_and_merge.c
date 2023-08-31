@@ -31,14 +31,22 @@ void partition_and_merge(host_t *host, T *workload, T *output, size_t workload_s
         exit(1);
     }
 
+    // restart timers
+    host->timer[0] = 0;
+    host->timer[1] = 0;
+
     // init workers
     worker_t *workers = malloc(sizeof(worker_t) * host->worker_count);
     init_workers(workers, host->worker_count, host->worker_mem_size, &worker_psort_and_tick);
 
     // create initial workload
+    double start, end;
+    start = omp_get_wtime();
     sort_props_t s1[host->worker_count];
     double sort_timer[host->worker_count];
     init_props(host, workload, workload_size, s1, sort_timer);
+    end = omp_get_wtime();
+    host->timer[0] += end - start;
 
     // parallel partition sorting
     double max_worker_time = 0;
@@ -53,13 +61,12 @@ void partition_and_merge(host_t *host, T *workload, T *output, size_t workload_s
         ptrs[i] = s1[i].input;
     }
 
-    double start, end;
     start = omp_get_wtime();
     merge(host, output, workload_size, s1, ptrs);
     end = omp_get_wtime();
 
-    host->timer[0] = end - start;
-    host->timer[1] = max_worker_time;
+    host->timer[0] += end - start;
+    host->timer[1] += max_worker_time;
 }
 
 
@@ -95,11 +102,8 @@ void merge(const host_t *host, T *output, size_t workload_size, const sort_props
         if (ptrs[ptr_index] != NULL) {
             ptrs[ptr_index]++;
 
-            if (ptrs[ptr_index] > (s1[ptr_index].input + s1[ptr_index].element_in_partition))
-
-                if (ptrs[ptr_index] - s1[ptr_index].input == s1[ptr_index].element_in_partition) {
-                    ptrs[ptr_index] = NULL;
-                }
+            if (ptrs[ptr_index] == (s1[ptr_index].input + s1[ptr_index].element_in_partition))
+                ptrs[ptr_index] = NULL;
         }
     }
 }
