@@ -59,7 +59,6 @@ int main(int argc, char *argv[]) {
         printf("TOTAL EXECUTION TIME : %f\n", (host.timer[1] + host.timer[0]) * 1000);
         printf("-------------------------\n");
 
-
         POPULATE_ARR(array, elem, limit);
     }
 
