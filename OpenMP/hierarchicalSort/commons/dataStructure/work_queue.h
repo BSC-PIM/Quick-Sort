@@ -32,16 +32,16 @@ typedef struct work_queue {
 /// @param queue is a pointer to work_queue_t
 void work_queue_init(work_queue_t *queue);
 
-/// @brief work_queue_push is a function which pushes job to work_queue_t
+/// @brief work_queue_push is a function which pushes sort_job to work_queue_t
 /// @note this function is thread safe
 /// @param queue is a pointer to work_queue_t
-/// @param job is a pointer to job_t
+/// @param job is a pointer to sort_job_t
 void work_queue_push(work_queue_t *queue, void *job);
 
-/// @brief work_queue_pop is a function which pops job from work_queue_t
+/// @brief work_queue_pop is a function which pops sort_job from work_queue_t
 /// @note this function is thread safe
 /// @param queue is a pointer to work_queue_t
-/// @return pointer to job_t
+/// @return pointer to sort_job_t
 void *work_queue_pop(work_queue_t *queue);
 
 /// @brief work_queue_destroy is a function which destroys work_queue_t

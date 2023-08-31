@@ -75,7 +75,7 @@ void *work_queue_pop(work_queue_t *queue) {
 
     // get last item
     assert(queue->head != NULL);
-    job_t *job = queue->head->job;
+    sort_job_t *job = queue->head->job;
 
     // remove item from queue
     work_queue_item_t *new_head = queue->head->prev;

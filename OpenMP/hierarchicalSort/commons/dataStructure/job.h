@@ -7,9 +7,16 @@
 
 #include <stdint.h>
 
-typedef struct job{
+typedef struct sort_job {
     size_t start;
     size_t end;
-} job_t;
+} sort_job_t;
+
+typedef struct merge_job {
+    uint16_t w_first;
+    uint16_t w_last;
+    size_t start; // start index of the first worker
+    size_t end;   // last index of the last worker
+} merge_job_t;
 
 #endif //MERGEIDEA_JOB_H
