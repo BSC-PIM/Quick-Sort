@@ -25,13 +25,13 @@ void quicksort_baseline(T *arr, size_t size) {
 /**
  * @brief Populate an array with a specified value.
  *
- * This function populates an array with a given value up to the specified partition_size.
+ * This function populates an array with a given value up to the specified element_in_partition.
  * The array is populated with the value specified by the maximum value of the data type.
  *
  * @param arr Pointer to the array to be populated.
  * @param size Size of the array.
  *
- * @note The array should have enough memory allocated to accommodate the specified partition_size.
+ * @note The array should have enough memory allocated to accommodate the specified element_in_partition.
  * @warning Using this function with large sizes might lead to performance issues.
  */
 void populate_wrapper(T *arr, size_t size) {
@@ -68,9 +68,9 @@ int main(int argc, char *argv[]) {
                         "  This program demonstrates different threads number and method effects on sorting.\n\n"
                         "Options:\n"
                         "--threads NUM                         Number of threads to use\n"
-                        "--array-partition_size NUM                      Size of the array\n"
+                        "--array-element_in_partition NUM                      Size of the array\n"
                         "Usage Examples:\n"
-                        "  program_name --threads 4 --array-partition_size 100   # Run with 4 threads and array partition_size 100\n";
+                        "  program_name --threads 4 --array-element_in_partition 100   # Run with 4 threads and array element_in_partition 100\n";
 
 
     // Parse the flags
