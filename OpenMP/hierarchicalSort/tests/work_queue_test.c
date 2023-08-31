@@ -23,9 +23,9 @@ void tearDown() {
 /// \brief populate_wq is a function which create random jobs
 /// \param jobs  is a pointer to array of jobs
 /// \param size  is a size of array
-static void populate_wq(work_queue_t *wq, job_t **jobs, size_t size) {
+static void populate_wq(work_queue_t *wq, sort_job_t **jobs, size_t size) {
     for (size_t i = 0; i < size; i++) {
-        jobs[i] = malloc(sizeof(job_t));
+        jobs[i] = malloc(sizeof(sort_job_t));
         jobs[i]->start = i;
         work_queue_push(wq, jobs[i]);
     }
@@ -38,7 +38,7 @@ void test_initialWorkQueue_shouldHaveZeroSizeAndNullHEAD(void) {
 }
 
 void test_multiplePushOnQueue_shouldInsertAllItemsInOrder(void) {
-    job_t *jobs[JOBS_N];
+    sort_job_t *jobs[JOBS_N];
     populate_wq(wq, jobs, JOBS_N);
 
     for (int i = JOBS_N - 1; i >= 0; i--) {
@@ -48,12 +48,12 @@ void test_multiplePushOnQueue_shouldInsertAllItemsInOrder(void) {
 }
 
 void test_singlePopFromQueue_ShouldReturnTheSameJob(void) {
-    job_t *job_push;
-    job_push = malloc(sizeof(job_t));
+    sort_job_t *job_push;
+    job_push = malloc(sizeof(sort_job_t));
 
     work_queue_push(wq, job_push);
 
-    job_t *job_pop = work_queue_pop(wq);
+    sort_job_t *job_pop = work_queue_pop(wq);
     TEST_ASSERT_EQUAL_PTR_MESSAGE(job_push, job_pop, "INCORRECT JOB POP");
 }
 
@@ -69,7 +69,7 @@ void test_multiplePopFromQueue_ShouldReturnTheSameJob(void) {
             popped++;
         } else {
             // push
-            job_t *job = malloc(sizeof(job_t));
+            sort_job_t *job = malloc(sizeof(sort_job_t));
             job->start = i;
             work_queue_push(wq, job);
             // atomic increment
@@ -86,11 +86,11 @@ void test_PopFromEmptyQueue_ShouldReturnNull(void) {
 
 void test_multiThreadPush_shouldPushAllTheElements(void) {
     int num_threads = omp_get_max_threads();
-    job_t *jobs[num_threads];
+    sort_job_t *jobs[num_threads];
 
 #pragma omp parallel for default(none) firstprivate(num_threads) shared(jobs, wq)
     for (int i = 0; i < num_threads; i++) {
-        jobs[i] = malloc(sizeof(job_t));
+        jobs[i] = malloc(sizeof(sort_job_t));
         jobs[i]->start = i;
         work_queue_push(wq, jobs[i]);
     }
@@ -113,7 +113,7 @@ void test_multiThreadPop_shouldPopAllTheElements(void) {
             popped++;
         } else {
             // push
-            job_t *job = malloc(sizeof(job_t));
+            sort_job_t *job = malloc(sizeof(sort_job_t));
             work_queue_push(wq, job);
             // atomic increment
 #pragma omp atomic
