@@ -18,9 +18,8 @@ int main(int argc, char *argv[]) {
     omp_set_num_threads(omp_get_num_procs());
 
     T *array = (T *) malloc(elem * sizeof(T));
-    T *output = (T *) malloc(elem * sizeof(T));
 
-    if (array == NULL || output == NULL) {
+    if (array == NULL) {
         fprintf(stderr, "ALLOCATION FAILED\n");
         exit(1);
     }
@@ -34,12 +33,12 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < test; i++) {
         host_t host;
         host.worker_count = 640;
-        host.worker_mem_size = (1 << 20); // 64MB
+        host.worker_mem_size = (1 << 20); // 1MB
         host.thread_count = 6;
         host.host_mem_size = (1 << 30); // 1GB
         host.tasklet_count = 6;
 
-        two_step_sort(&host, array, output, elem);
+        two_step_sort(&host, array, elem);
 
         // verify if the array is sorted
         for (size_t k = 0; k < elem - 1; k++) {
@@ -53,13 +52,14 @@ int main(int argc, char *argv[]) {
         worker_avg += host.timer[1];
         total_avg += (host.timer[0] + host.timer[1]);
 
-        printf("-------------------------\n");
-        printf("HOST EXECUTION TIME : %f\n", host.timer[0] * 1000);
-        printf("WORKER EXECUTION TIME : %f\n", host.timer[1] * 1000);
-        printf("TOTAL EXECUTION TIME : %f\n", (host.timer[1] + host.timer[0]) * 1000);
-        printf("-------------------------\n");
+        printf("--------------------------------\n");
+        printf("HOST EXECUTION TIME   : %.2fms\n", host.timer[0] * 1000);
+        printf("WORKER EXECUTION TIME : %.2fms\n", host.timer[1] * 1000);
+        printf("TOTAL EXECUTION TIME  : %.2fms\n", (host.timer[1] + host.timer[0]) * 1000);
+        printf("--------------------------------\n");
 
         POPULATE_ARR(array, elem, limit);
+
     }
 
     host_avg = host_avg / test;
@@ -73,8 +73,8 @@ int main(int argc, char *argv[]) {
     printf("\n");
     printf("|     Metric     |   Average   |\n");
     // Print averages with formatting
-    printf("|      Host      | %10.2fs |\n", host_avg);
-    printf("|     Worker     | %10.2fs |\n", worker_avg);
-    printf("|     Total      | %10.2fs |\n", total_avg);
+    printf("|      Host      | %7.2fs    |\n", host_avg);
+    printf("|     Worker     | %7.2fs    |\n", worker_avg);
+    printf("|     Total      | %7.2fs    |\n", total_avg);
     printf("\n");
 }

@@ -5,6 +5,7 @@ void init_props(host_t *host, T *workload, size_t workload_size, sort_props_t *s
 
 void merge(const host_t *host, T *output, size_t workload_size, const sort_props_t *s1, T **ptrs);
 
+void check_memory_bound(const host_t *host, size_t workload_size);
 
 /**
  * @brief Perform parallel partition sorting and sequential merging of workloads.
@@ -20,16 +21,7 @@ void merge(const host_t *host, T *output, size_t workload_size, const sort_props
  */
 void partition_and_merge(host_t *host, T *workload, T *output, size_t workload_size) {
     // check if host has enough memory
-    if (host->host_mem_size < workload_size * sizeof(T)) {
-        fprintf(stderr, "Host does not have enough memory to run partition_and_merge\n");
-        exit(1);
-    }
-
-    // check if number of available threads is enough
-    if (omp_get_num_procs() < host->thread_count) {
-        fprintf(stderr, "Host does not have enough threads to run partition_and_merge\n");
-        exit(1);
-    }
+    check_memory_bound(host, workload_size);
 
     // restart timers
     host->timer[0] = 0;
@@ -67,6 +59,28 @@ void partition_and_merge(host_t *host, T *workload, T *output, size_t workload_s
 
     host->timer[0] += end - start;
     host->timer[1] += max_worker_time;
+}
+
+/**
+ * @brief Check if the host has enough memory and available threads.
+ *
+ * This function checks if the host has enough memory to accommodate the workload and if there are
+ * enough available threads to execute parallel operations.
+ *
+ * @param host Pointer to the host structure containing host information.
+ * @param workload_size Size of the workload to be processed.
+ */
+void check_memory_bound(const host_t *host, size_t workload_size) {
+    if (host->host_mem_size < workload_size * sizeof(T)) {
+        fprintf(stderr, "Host does not have enough memory to run partition_and_merge\n");
+        exit(1);
+    }
+
+    // check if number of available threads is enough
+    if (omp_get_num_procs() < host->thread_count) {
+        fprintf(stderr, "Host does not have enough threads to run partition_and_merge\n");
+        exit(1);
+    }
 }
 
 

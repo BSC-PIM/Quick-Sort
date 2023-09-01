@@ -10,7 +10,7 @@
 #include "merge/partition_and_merge.h"
 
 
-#define TEST_COUNT 50
+#define TEST_COUNT 1
 
 int main(int argc, char *argv[]) {
 
@@ -54,11 +54,11 @@ int main(int argc, char *argv[]) {
         worker_avg += host.timer[1];
         total_avg += (host.timer[0] + host.timer[1]);
 
-        printf("-------------------------\n");
-        printf("HOST EXECUTION TIME : %f\n", host.timer[0] * 1000);
-        printf("WORKER EXECUTION TIME : %f\n", host.timer[1] * 1000);
-        printf("TOTAL EXECUTION TIME : %f\n", (host.timer[1] + host.timer[0]) * 1000);
-        printf("-------------------------\n");
+        printf("--------------------------------\n");
+        printf("HOST EXECUTION TIME   : %.2fms\n", host.timer[0] * 1000);
+        printf("WORKER EXECUTION TIME : %.2fms\n", host.timer[1] * 1000);
+        printf("TOTAL EXECUTION TIME  : %.2fms\n", (host.timer[1] + host.timer[0]) * 1000);
+        printf("--------------------------------\n");
 
 
         POPULATE_ARR(array, elem, limit);
@@ -75,8 +75,8 @@ int main(int argc, char *argv[]) {
     printf("\n");
     printf("|     Metric     |   Average   |\n");
     // Print averages with formatting
-    printf("|      Host      | %10.2fs |\n", host_avg);
-    printf("|     Worker     | %10.2fs |\n", worker_avg);
-    printf("|     Total      | %10.2fs |\n", total_avg);
+    printf("|      Host      | %7.2fs    |\n", host_avg);
+    printf("|     Worker     | %7.2fs    |\n", worker_avg);
+    printf("|     Total      | %7.2fs    |\n", total_avg);
     printf("\n");
 }
