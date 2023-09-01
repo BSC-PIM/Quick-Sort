@@ -3,7 +3,7 @@
 uint16_t get_corresponding_worker_id(size_t index, size_t mem_size);
 
 
-void two_step_sort(host_t *host, T *workload, T *output, size_t workload_size) {
+void two_step_sort(host_t *host, T *workload, size_t workload_size) {
 
     // check if host has enough memory
     if (host->host_mem_size < workload_size * sizeof(T)) {
@@ -116,6 +116,7 @@ void two_step_sort(host_t *host, T *workload, T *output, size_t workload_size) {
     }
     printf("max worker time is equal to : %f\n", max_worker_time * 1000);
 
+    printf("mj_count is equal to : %d\n", mj_count);
 
     // do the merge step based on the number of workers
     for (uint16_t i = 0; i < mj_count; i++) {
@@ -123,6 +124,8 @@ void two_step_sort(host_t *host, T *workload, T *output, size_t workload_size) {
         merge_job_t job = m1[i];
         size_t merge_size = job.end;
         size_t sorted_index = job.start;
+
+        T *temp = malloc(sizeof(T) * (job.end - job.start));
 
         uint16_t ptr_size = job.w_last - job.w_first;
         T *ptrs[ptr_size - 1];
@@ -143,7 +146,7 @@ void two_step_sort(host_t *host, T *workload, T *output, size_t workload_size) {
                     }
                 }
             }
-            output[sorted_index] = current_min;
+            temp[sorted_index - job.start] = current_min;
             sorted_index++;
 
             if (ptrs[ptr_index] != NULL) {
@@ -156,10 +159,11 @@ void two_step_sort(host_t *host, T *workload, T *output, size_t workload_size) {
             }
         }
         end = omp_get_wtime();
-        host->timer[0] += end - start;
 
         // copy the output to the workload
-        memcpy(workload + job.start, output + job.start, (job.end - job.start) * sizeof(T));
+        memcpy(workload + job.start, temp, (job.end - job.start) * sizeof(T));
+        free(temp);
+        host->timer[0] += end - start;
     }
 
     host->timer[1] = max_worker_time;

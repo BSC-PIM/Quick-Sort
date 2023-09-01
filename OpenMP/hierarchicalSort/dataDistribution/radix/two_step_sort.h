@@ -15,7 +15,7 @@
 #include "../host.h"
 
 
-void two_step_sort(host_t *host, T *workload, T *output, size_t workload_size);
+void two_step_sort(host_t *host, T *workload, size_t workload_size);
 
 
 #endif //DPULEVEL_TWO_STEP_SORT_H
