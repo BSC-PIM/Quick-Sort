@@ -20,7 +20,9 @@ size_t hoare_partition(T *array, size_t start, size_t end) {
 
 
     size_t k, j;
-    T pivot = array[end];
+    T pivot = array[(start + end) >> 1];
+    SWAP(array[end], array[(start + end) >> 1]);
+
     for (k = start, j = end; 1; k++, j--) {
         while (array[k] < pivot)
             k++;
