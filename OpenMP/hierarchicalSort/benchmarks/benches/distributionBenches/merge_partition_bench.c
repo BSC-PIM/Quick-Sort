@@ -9,14 +9,18 @@
 #include "host.h"
 #include "merge/partition_and_merge.h"
 
+#define PER_ITER
 
-#define TEST_COUNT 1
+#define TEST_COUNT 50
 
 int main(int argc, char *argv[]) {
+    srand(time(NULL));
+    size_t elem = 1 << atoi(argv[1]);
 
-    size_t elem = 1 << 24; // 16 * sizof(T) MB = 64MB
     T limit = T_MAX;
     omp_set_num_threads(omp_get_num_procs());
+    QSORT_GROUP_MIN_DIST = 128;
+
 
     T *array = (T *) malloc(elem * sizeof(T));
     T *output = (T *) malloc(elem * sizeof(T));
@@ -29,15 +33,16 @@ int main(int argc, char *argv[]) {
 
     POPULATE_ARR(array, elem, limit);
 
+
     int test = TEST_COUNT;
 
     double host_avg = 0, worker_avg = 0, total_avg = 0;
     for (int i = 0; i < test; i++) {
         host_t host;
         host.worker_count = 640;
-        host.worker_mem_size = (1 << 20); // 64MB
+        host.worker_mem_size = (1 << 20); // 1MiB
         host.thread_count = 6;
-        host.host_mem_size = (1 << 30); // 1GB
+        host.host_mem_size = (1 << 30); // 1GiB
         host.tasklet_count = 6;
 
         partition_and_merge(&host, array, output, elem);
@@ -54,13 +59,13 @@ int main(int argc, char *argv[]) {
         worker_avg += host.timer[1];
         total_avg += (host.timer[0] + host.timer[1]);
 
+#ifdef PER_ITER
         printf("--------------------------------\n");
         printf("HOST EXECUTION TIME   : %.2fms\n", host.timer[0] * 1000);
         printf("WORKER EXECUTION TIME : %.2fms\n", host.timer[1] * 1000);
         printf("TOTAL EXECUTION TIME  : %.2fms\n", (host.timer[1] + host.timer[0]) * 1000);
         printf("--------------------------------\n");
-
-
+#endif
         POPULATE_ARR(array, elem, limit);
     }
 
@@ -68,15 +73,14 @@ int main(int argc, char *argv[]) {
     worker_avg = worker_avg / test;
     total_avg = total_avg / test;
 
-    // Set text color to green
     printf("\x1b[32m"); // ANSI escape code for green
 
     // Print header
     printf("\n");
     printf("|     Metric     |   Average   |\n");
     // Print averages with formatting
-    printf("|      Host      | %7.2fs    |\n", host_avg);
-    printf("|     Worker     | %7.2fs    |\n", worker_avg);
-    printf("|     Total      | %7.2fs    |\n", total_avg);
+    printf("|      Host      | %7.4f    |\n", host_avg * 1000);
+    printf("|     Worker     | %7.4f    |\n", worker_avg * 1000);
+    printf("|     Total      | %7.4f    |\n", total_avg * 1000);
     printf("\n");
 }
