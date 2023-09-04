@@ -44,12 +44,7 @@ void two_step_sort(host_t *host, T *workload, size_t workload_size) {
     worker_t *workers = malloc(sizeof(worker_t) * host->worker_count);
     init_workers(workers, host->worker_count, host->worker_mem_size, &worker_psort_and_tick);
 
-    // first step sort : sort elements based on the H MSB bit
-    // set number of threads
-    omp_set_num_threads(host->thread_count);
-    RUNNER_THREADS_NUM = host->thread_count;
-
-    double start, end;
+    double start = 0, end = 0;
     start = omp_get_wtime();
 
     // first level sort
