@@ -21,7 +21,7 @@ typedef void (*to_execute)(worker_t, const sort_props_t);
 
 static inline void
 init_workers(worker_t *workers, size_t workers_num, size_t worker_max_memory, to_execute worker_psort_and_tick) {
-    for (int i = 0; i < workers_num; i++) {
+    for (size_t i = 0; i < workers_num; i++) {
         // set worker id
         workers[i].me = i;
 
